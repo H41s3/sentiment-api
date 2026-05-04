@@ -44,7 +44,7 @@ htmlcov/
 # macOS
 .DS_Store
 
-# Models / large files
-models/
+# Models / large files (top-level cache dir only)
+/models/
 *.bin
 *.safetensors
