@@ -1,11 +1,16 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends
 
+from app.dependencies import get_sentiment_service
 from app.models.schemas import SentimentRequest, SentimentResponse
+from app.services.sentiment_service import SentimentService
 
 router = APIRouter(tags=["sentiment"])
 
 
 @router.post("/analyze", response_model=SentimentResponse, summary="Analyze sentiment of text")
-async def analyze_sentiment(request: SentimentRequest):
-    # TODO: inject SentimentService and call .analyze(request.text)
-    raise HTTPException(status_code=501, detail="Sentiment service not wired up yet")
+async def analyze_sentiment(
+    request: SentimentRequest,
+    service: SentimentService = Depends(get_sentiment_service),
+):
+    result = service.analyze(request.text)
+    return SentimentResponse(text=request.text, sentiment=result, model=service.model_name)
