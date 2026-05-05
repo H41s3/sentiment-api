@@ -1,8 +1,12 @@
+from typing import Annotated
+
 from pydantic import BaseModel, Field
+
+CleanText = Annotated[str, Field(min_length=1, max_length=5000)]
 
 
 class SentimentRequest(BaseModel):
-    text: str = Field(..., min_length=1, max_length=5000, examples=["I love this!"])
+    text: CleanText = Field(..., examples=["I love this!"])
 
 
 class SentimentResult(BaseModel):
@@ -14,3 +18,18 @@ class SentimentResponse(BaseModel):
     text: str
     sentiment: SentimentResult
     model: str
+
+
+class BatchSentimentRequest(BaseModel):
+    texts: list[CleanText] = Field(..., min_length=1, max_length=32)
+
+
+class BatchSentimentItem(BaseModel):
+    text: str
+    sentiment: SentimentResult
+
+
+class BatchSentimentResponse(BaseModel):
+    results: list[BatchSentimentItem]
+    model: str
+    count: int
