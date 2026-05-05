@@ -1,15 +1,20 @@
-from fastapi import FastAPI
+import logging
 from contextlib import asynccontextmanager
 
-from app.routes import sentiment
+from fastapi import FastAPI
+
 from app.config import settings
+from app.dependencies import get_sentiment_service
+from app.middleware import LoggingMiddleware
+from app.routes import sentiment
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s  %(levelname)s  %(name)s  %(message)s")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # TODO: load ML model here so it's warm on first request
+    get_sentiment_service().load()
     yield
-    # TODO: release model resources on shutdown
 
 
 app = FastAPI(
@@ -19,6 +24,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+app.add_middleware(LoggingMiddleware)
 app.include_router(sentiment.router, prefix="/api/v1")
 
 
