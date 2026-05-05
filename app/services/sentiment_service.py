@@ -1,4 +1,5 @@
 from app.models.schemas import SentimentResult
+from app.utils.text import preprocess
 
 _POSITIVE_WORDS = {"love", "great", "good", "excellent", "awesome", "happy", "fantastic", "wonderful", "best", "perfect"}
 _NEGATIVE_WORDS = {"hate", "bad", "terrible", "awful", "horrible", "sad", "worst", "poor", "disgusting", "broken"}
@@ -22,6 +23,7 @@ class SentimentService:
     def analyze(self, text: str) -> SentimentResult:
         if self._pipeline is None:
             self.load()
+        text = preprocess(text)
         if self._pipeline == "stub":
             return self._stub_analyze(text)
         truncated = text[: self.max_length * 4]
