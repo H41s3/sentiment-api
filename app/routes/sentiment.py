@@ -8,10 +8,13 @@ from app.models.schemas import (
     BatchSentimentItem,
     BatchSentimentRequest,
     BatchSentimentResponse,
+    ErrorResponse,
     SentimentRequest,
     SentimentResponse,
 )
 from app.services.sentiment_service import SentimentService
+
+_AUTH_RESPONSES = {401: {"model": ErrorResponse}}
 
 router = APIRouter(tags=["sentiment"])
 
@@ -25,7 +28,7 @@ def versioned_health(service: SentimentService = Depends(get_sentiment_service))
     }
 
 
-@router.post("/analyze", response_model=SentimentResponse, summary="Analyze sentiment of a single text", dependencies=[Depends(verify_api_key)])
+@router.post("/analyze", response_model=SentimentResponse, responses=_AUTH_RESPONSES, summary="Analyze sentiment of a single text", dependencies=[Depends(verify_api_key)])
 async def analyze_sentiment(
     request: SentimentRequest,
     service: SentimentService = Depends(get_sentiment_service),
@@ -35,7 +38,7 @@ async def analyze_sentiment(
     return SentimentResponse(text=request.text, sentiment=result, model=service.model_name)
 
 
-@router.post("/analyze/batch", response_model=BatchSentimentResponse, summary="Analyze sentiment of multiple texts", dependencies=[Depends(verify_api_key)])
+@router.post("/analyze/batch", response_model=BatchSentimentResponse, responses=_AUTH_RESPONSES, summary="Analyze sentiment of multiple texts", dependencies=[Depends(verify_api_key)])
 async def analyze_batch(
     request: BatchSentimentRequest,
     service: SentimentService = Depends(get_sentiment_service),

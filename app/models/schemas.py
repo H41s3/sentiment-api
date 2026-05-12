@@ -5,6 +5,11 @@ from pydantic import BaseModel, Field
 CleanText = Annotated[str, Field(min_length=1, max_length=5000)]
 
 
+class ErrorResponse(BaseModel):
+    error: str = Field(..., examples=["unauthorized"])
+    message: str = Field(..., examples=["Invalid or missing X-Api-Key header."])
+
+
 class SentimentRequest(BaseModel):
     text: CleanText = Field(..., examples=["I love this!"])
 
