@@ -37,5 +37,6 @@ async def analyze_batch(
     request: BatchSentimentRequest,
     service: SentimentService = Depends(get_sentiment_service),
 ):
-    items = [BatchSentimentItem(text=t, sentiment=service.analyze(t)) for t in request.texts]
+    sentiments = service.analyze_batch(request.texts)
+    items = [BatchSentimentItem(text=t, sentiment=s) for t, s in zip(request.texts, sentiments)]
     return BatchSentimentResponse(results=items, model=service.model_name, count=len(items))

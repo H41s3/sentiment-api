@@ -30,6 +30,16 @@ class SentimentService:
         result = self._pipeline(truncated)[0]
         return SentimentResult(label=result["label"], score=result["score"])
 
+    def analyze_batch(self, texts: list[str]) -> list[SentimentResult]:
+        if self._pipeline is None:
+            self.load()
+        preprocessed = [preprocess(t) for t in texts]
+        if self._pipeline == "stub":
+            return [self._stub_analyze(t) for t in preprocessed]
+        truncated = [t[: self.max_length * 4] for t in preprocessed]
+        results = self._pipeline(truncated)
+        return [SentimentResult(label=r["label"], score=r["score"]) for r in results]
+
     def _stub_analyze(self, text: str) -> SentimentResult:
         words = set(text.lower().split())
         pos = len(words & _POSITIVE_WORDS)
