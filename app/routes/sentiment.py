@@ -1,3 +1,5 @@
+import asyncio
+
 from fastapi import APIRouter, Depends
 
 from app.auth import verify_api_key
@@ -28,7 +30,8 @@ async def analyze_sentiment(
     request: SentimentRequest,
     service: SentimentService = Depends(get_sentiment_service),
 ):
-    result = service.analyze(request.text)
+    loop = asyncio.get_event_loop()
+    result = await loop.run_in_executor(None, service.analyze, request.text)
     return SentimentResponse(text=request.text, sentiment=result, model=service.model_name)
 
 
@@ -37,6 +40,7 @@ async def analyze_batch(
     request: BatchSentimentRequest,
     service: SentimentService = Depends(get_sentiment_service),
 ):
-    sentiments = service.analyze_batch(request.texts)
+    loop = asyncio.get_event_loop()
+    sentiments = await loop.run_in_executor(None, service.analyze_batch, request.texts)
     items = [BatchSentimentItem(text=t, sentiment=s) for t, s in zip(request.texts, sentiments)]
     return BatchSentimentResponse(results=items, model=service.model_name, count=len(items))
