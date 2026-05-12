@@ -45,7 +45,11 @@ uvicorn app.main:app --reload
 ## Docker
 
 ```bash
+# Production
 docker compose up --build
+
+# Development (hot reload + source mount)
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 ```
 
 API will be available at `http://localhost:8000`.
@@ -128,6 +132,7 @@ sentiment-api/
 | `MAX_LENGTH` | `512` | Max tokenizer length |
 | `PORT` | `8000` | Uvicorn port |
 | `API_KEY` | _(unset)_ | Optional API key — enforced on /analyze routes if set |
+| `WEB_CONCURRENCY` | `2` | Number of gunicorn worker processes |
 
 ## Notes on the ML model
 

@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     port: int = 8000
     api_key: str | None = None
     cors_origins: list[str] = ["*"]
+    web_concurrency: int = 2
 
     class Config:
         env_file = ".env"
