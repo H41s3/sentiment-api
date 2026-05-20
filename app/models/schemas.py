@@ -23,6 +23,7 @@ class SentimentResponse(BaseModel):
     text: str
     sentiment: SentimentResult
     model: str
+    processing_ms: float = Field(..., description="Time spent on inference in milliseconds")
 
 
 class BatchSentimentRequest(BaseModel):
@@ -38,3 +39,4 @@ class BatchSentimentResponse(BaseModel):
     results: list[BatchSentimentItem]
     model: str
     count: int
+    processing_ms: float = Field(..., description="Time spent on batch inference in milliseconds")
