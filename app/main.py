@@ -13,8 +13,19 @@ from app.routes import sentiment
 logging.basicConfig(level=logging.INFO, format="%(asctime)s  %(levelname)s  %(name)s  %(message)s")
 
 
+_log = logging.getLogger("sentiment_api")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    _log.info(
+        "Starting Sentiment API — model=%s  max_length=%d  auth=%s  workers=%d  max_batch=%d",
+        settings.model_name,
+        settings.max_length,
+        "enabled" if settings.api_key else "disabled",
+        settings.web_concurrency,
+        settings.max_batch_size,
+    )
     service = get_sentiment_service()
     service.load()
     service.warm_up()
