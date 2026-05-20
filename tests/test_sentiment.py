@@ -77,7 +77,8 @@ def test_batch_analyze_rejects_empty_list(stub_client):
 
 def test_batch_analyze_rejects_oversized_batch(stub_client):
     response = stub_client.post("/api/v1/analyze/batch", json={"texts": ["hello"] * 33})
-    assert response.status_code == 422
+    assert response.status_code == 400
+    assert response.json()["detail"]["error"] == "batch_too_large"
 
 
 def test_batch_each_item_has_shape(stub_client):

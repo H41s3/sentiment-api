@@ -1,7 +1,7 @@
 import logging
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
@@ -9,6 +9,7 @@ from app.config import settings
 from app.dependencies import get_sentiment_service
 from app.middleware import LoggingMiddleware
 from app.routes import sentiment
+from app.services.sentiment_service import SentimentService
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s  %(levelname)s  %(name)s  %(message)s")
 
@@ -69,10 +70,9 @@ def liveness():
 
 
 @app.get("/health/ready", tags=["meta"], summary="Readiness probe")
-def readiness():
+def readiness(service: SentimentService = Depends(get_sentiment_service)):
     """Returns 200 only when the model is loaded and ready to serve traffic.
     Orchestrators should gate routing on this, not /health/live."""
-    service = get_sentiment_service()
     if not service.is_loaded:
         return JSONResponse(
             status_code=503,
