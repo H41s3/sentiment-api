@@ -15,7 +15,9 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s  %(levelname)s  %(na
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    get_sentiment_service().load()
+    service = get_sentiment_service()
+    service.load()
+    service.warm_up()
     yield
 
 

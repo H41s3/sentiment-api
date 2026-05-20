@@ -20,6 +20,12 @@ class SentimentService:
         except ImportError:
             self._pipeline = "stub"
 
+    def warm_up(self) -> None:
+        """Run one dummy inference to trigger PyTorch JIT compilation.
+        The first real request otherwise pays a 2-5x latency penalty."""
+        if self._pipeline is not None and self._pipeline != "stub":
+            self._pipeline("warm up")
+
     def analyze(self, text: str) -> SentimentResult:
         if self._pipeline is None:
             self.load()
