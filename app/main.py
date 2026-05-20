@@ -30,6 +30,8 @@ async def lifespan(app: FastAPI):
     service.load()
     service.warm_up()
     yield
+    service.unload()
+    _log.info("Sentiment API shut down — model weights released")
 
 
 app = FastAPI(

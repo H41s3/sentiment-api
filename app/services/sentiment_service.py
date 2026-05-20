@@ -36,6 +36,10 @@ class SentimentService:
         if self._pipeline is not None and self._pipeline != "stub":
             self._pipeline("warm up")
 
+    def unload(self) -> None:
+        """Release the pipeline and model weights from memory."""
+        self._pipeline = None
+
     def analyze(self, text: str) -> SentimentResult:
         if self._pipeline is None:
             self.load()
