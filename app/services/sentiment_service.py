@@ -4,6 +4,11 @@ from app.utils.text import preprocess
 _POSITIVE_WORDS = {"love", "great", "good", "excellent", "awesome", "happy", "fantastic", "wonderful", "best", "perfect"}
 _NEGATIVE_WORDS = {"hate", "bad", "terrible", "awful", "horrible", "sad", "worst", "poor", "disgusting", "broken"}
 
+# Some fine-tuned models return generic LABEL_N keys instead of human-readable
+# sentiment names. This map keeps our API contract stable regardless of which
+# underlying checkpoint is configured.
+_LABEL_MAP = {"LABEL_0": "NEGATIVE", "LABEL_1": "POSITIVE"}
+
 
 class SentimentService:
     """Wraps a HuggingFace pipeline for sentiment classification."""
@@ -34,7 +39,7 @@ class SentimentService:
             return self._stub_analyze(text)
         truncated = text[: self.max_length * 4]
         result = self._pipeline(truncated)[0]
-        return SentimentResult(label=result["label"], score=result["score"])
+        return SentimentResult(label=_LABEL_MAP.get(result["label"], result["label"]), score=result["score"])
 
     def analyze_batch(self, texts: list[str]) -> list[SentimentResult]:
         if self._pipeline is None:
@@ -44,7 +49,7 @@ class SentimentService:
             return [self._stub_analyze(t) for t in preprocessed]
         truncated = [t[: self.max_length * 4] for t in preprocessed]
         results = self._pipeline(truncated)
-        return [SentimentResult(label=r["label"], score=r["score"]) for r in results]
+        return [SentimentResult(label=_LABEL_MAP.get(r["label"], r["label"]), score=r["score"]) for r in results]
 
     def _stub_analyze(self, text: str) -> SentimentResult:
         words = set(text.lower().split())
