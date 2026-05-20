@@ -1,0 +1,55 @@
+from app.models.schemas import SentimentResult
+from app.utils.text import preprocess
+
+_POSITIVE_WORDS = {"love", "great", "good", "excellent", "awesome", "happy", "fantastic", "wonderful", "best", "perfect"}
+_NEGATIVE_WORDS = {"hate", "bad", "terrible", "awful", "horrible", "sad", "worst", "poor", "disgusting", "broken"}
+
+
+class SentimentService:
+    """Wraps a HuggingFace pipeline for sentiment classification."""
+
+    def __init__(self, model_name: str, max_length: int = 512):
+        self.model_name = model_name
+        self.max_length = max_length
+        self._pipeline = None
+
+    def load(self) -> None:
+        try:
+            from transformers import pipeline
+            self._pipeline = pipeline("sentiment-analysis", model=self.model_name)
+        except ImportError:
+            self._pipeline = "stub"
+
+    def analyze(self, text: str) -> SentimentResult:
+        if self._pipeline is None:
+            self.load()
+        text = preprocess(text)
+        if self._pipeline == "stub":
+            return self._stub_analyze(text)
+        truncated = text[: self.max_length * 4]
+        result = self._pipeline(truncated)[0]
+        return SentimentResult(label=result["label"], score=result["score"])
+
+    def analyze_batch(self, texts: list[str]) -> list[SentimentResult]:
+        if self._pipeline is None:
+            self.load()
+        preprocessed = [preprocess(t) for t in texts]
+        if self._pipeline == "stub":
+            return [self._stub_analyze(t) for t in preprocessed]
+        truncated = [t[: self.max_length * 4] for t in preprocessed]
+        results = self._pipeline(truncated)
+        return [SentimentResult(label=r["label"], score=r["score"]) for r in results]
+
+    def _stub_analyze(self, text: str) -> SentimentResult:
+        words = set(text.lower().split())
+        pos = len(words & _POSITIVE_WORDS)
+        neg = len(words & _NEGATIVE_WORDS)
+        if pos > neg:
+            return SentimentResult(label="POSITIVE", score=min(0.7 + pos * 0.05, 0.99))
+        if neg > pos:
+            return SentimentResult(label="NEGATIVE", score=min(0.7 + neg * 0.05, 0.99))
+        return SentimentResult(label="NEUTRAL", score=0.5)
+
+    @property
+    def is_loaded(self) -> bool:
+        return self._pipeline is not None

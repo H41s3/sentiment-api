@@ -1,0 +1,49 @@
+import asyncio
+
+from fastapi import APIRouter, Depends
+
+from app.auth import verify_api_key
+from app.dependencies import get_sentiment_service
+from app.models.schemas import (
+    BatchSentimentItem,
+    BatchSentimentRequest,
+    BatchSentimentResponse,
+    ErrorResponse,
+    SentimentRequest,
+    SentimentResponse,
+)
+from app.services.sentiment_service import SentimentService
+
+_AUTH_RESPONSES = {401: {"model": ErrorResponse}}
+
+router = APIRouter(tags=["sentiment"])
+
+
+@router.get("/health", tags=["meta"], summary="Versioned health check")
+def versioned_health(service: SentimentService = Depends(get_sentiment_service)):
+    return {
+        "status": "ok",
+        "model": service.model_name,
+        "pipeline_loaded": service.is_loaded,
+    }
+
+
+@router.post("/analyze", response_model=SentimentResponse, responses=_AUTH_RESPONSES, summary="Analyze sentiment of a single text", dependencies=[Depends(verify_api_key)])
+async def analyze_sentiment(
+    request: SentimentRequest,
+    service: SentimentService = Depends(get_sentiment_service),
+):
+    loop = asyncio.get_event_loop()
+    result = await loop.run_in_executor(None, service.analyze, request.text)
+    return SentimentResponse(text=request.text, sentiment=result, model=service.model_name)
+
+
+@router.post("/analyze/batch", response_model=BatchSentimentResponse, responses=_AUTH_RESPONSES, summary="Analyze sentiment of multiple texts", dependencies=[Depends(verify_api_key)])
+async def analyze_batch(
+    request: BatchSentimentRequest,
+    service: SentimentService = Depends(get_sentiment_service),
+):
+    loop = asyncio.get_event_loop()
+    sentiments = await loop.run_in_executor(None, service.analyze_batch, request.texts)
+    items = [BatchSentimentItem(text=t, sentiment=s) for t, s in zip(request.texts, sentiments)]
+    return BatchSentimentResponse(results=items, model=service.model_name, count=len(items))
