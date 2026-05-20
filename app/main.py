@@ -45,3 +45,22 @@ app.include_router(sentiment.router, prefix="/api/v1")
 @app.get("/health", tags=["meta"])
 def health_check():
     return {"status": "ok", "model": settings.model_name}
+
+
+@app.get("/health/live", tags=["meta"], summary="Liveness probe")
+def liveness():
+    """Always returns 200. Used by orchestrators to know the process is running."""
+    return {"status": "ok"}
+
+
+@app.get("/health/ready", tags=["meta"], summary="Readiness probe")
+def readiness():
+    """Returns 200 only when the model is loaded and ready to serve traffic.
+    Orchestrators should gate routing on this, not /health/live."""
+    service = get_sentiment_service()
+    if not service.is_loaded:
+        return JSONResponse(
+            status_code=503,
+            content={"status": "unavailable", "reason": "model not loaded"},
+        )
+    return {"status": "ok", "model": settings.model_name}
