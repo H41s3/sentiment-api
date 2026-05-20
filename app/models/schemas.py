@@ -26,7 +26,7 @@ class SentimentResponse(BaseModel):
 
 
 class BatchSentimentRequest(BaseModel):
-    texts: list[CleanText] = Field(..., min_length=1, max_length=32)
+    texts: list[CleanText] = Field(..., min_length=1)
 
 
 class BatchSentimentItem(BaseModel):

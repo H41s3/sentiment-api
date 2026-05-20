@@ -1,8 +1,9 @@
 import asyncio
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
 from app.auth import verify_api_key
+from app.config import settings
 from app.dependencies import get_sentiment_service
 from app.models.schemas import (
     BatchSentimentItem,
@@ -43,6 +44,14 @@ async def analyze_batch(
     request: BatchSentimentRequest,
     service: SentimentService = Depends(get_sentiment_service),
 ):
+    if len(request.texts) > settings.max_batch_size:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "error": "batch_too_large",
+                "message": f"Batch size {len(request.texts)} exceeds the configured maximum of {settings.max_batch_size}.",
+            },
+        )
     loop = asyncio.get_event_loop()
     sentiments = await loop.run_in_executor(None, service.analyze_batch, request.texts)
     items = [BatchSentimentItem(text=t, sentiment=s) for t, s in zip(request.texts, sentiments)]

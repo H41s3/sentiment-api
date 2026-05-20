@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     api_key: str | None = None
     cors_origins: list[str] = ["*"]
     web_concurrency: int = 2
+    max_batch_size: int = 32
 
     class Config:
         env_file = ".env"
