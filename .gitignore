@@ -38,8 +38,6 @@ htmlcov/
 *.swo
 *~
 
-# Docker
-.dockerignore
 
 # macOS
 .DS_Store
