@@ -21,7 +21,12 @@ class SentimentService:
     def load(self) -> None:
         try:
             from transformers import pipeline
-            self._pipeline = pipeline("sentiment-analysis", model=self.model_name)
+            self._pipeline = pipeline(
+                "sentiment-analysis",
+                model=self.model_name,
+                truncation=True,
+                max_length=self.max_length,
+            )
         except ImportError:
             self._pipeline = "stub"
 
@@ -37,8 +42,7 @@ class SentimentService:
         text = preprocess(text)
         if self._pipeline == "stub":
             return self._stub_analyze(text)
-        truncated = text[: self.max_length * 4]
-        result = self._pipeline(truncated)[0]
+        result = self._pipeline(text)[0]
         return SentimentResult(label=_LABEL_MAP.get(result["label"], result["label"]), score=result["score"])
 
     def analyze_batch(self, texts: list[str]) -> list[SentimentResult]:
@@ -47,8 +51,7 @@ class SentimentService:
         preprocessed = [preprocess(t) for t in texts]
         if self._pipeline == "stub":
             return [self._stub_analyze(t) for t in preprocessed]
-        truncated = [t[: self.max_length * 4] for t in preprocessed]
-        results = self._pipeline(truncated)
+        results = self._pipeline(preprocessed)
         return [SentimentResult(label=_LABEL_MAP.get(r["label"], r["label"]), score=r["score"]) for r in results]
 
     def _stub_analyze(self, text: str) -> SentimentResult:
