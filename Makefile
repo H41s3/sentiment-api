@@ -1,13 +1,13 @@
 .PHONY: run dev test lint docker-build docker-up
 
 run:
-	uvicorn app.main:app --reload --port 8000
+	uv run uvicorn app.main:app --reload --port 8000
 
 test:
-	pytest tests/ -v
+	uv run pytest tests/ -v
 
 lint:
-	ruff check app/ tests/
+	uv run ruff check app/ tests/
 
 docker-build:
 	docker build -t sentiment-api .
