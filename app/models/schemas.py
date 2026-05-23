@@ -51,3 +51,10 @@ class BatchSentimentResponse(BaseModel):
     model: str
     count: int
     processing_ms: float = Field(..., description="Time spent on batch inference in milliseconds")
+
+
+class ModelInfoResponse(BaseModel):
+    model: str
+    max_length: int
+    max_batch_size: int
+    version: str

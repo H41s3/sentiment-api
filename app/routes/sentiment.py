@@ -3,6 +3,8 @@ import time
 
 from fastapi import APIRouter, Depends, HTTPException
 
+from importlib.metadata import version as _pkg_version
+
 from app.auth import verify_api_key
 from app.config import settings
 from app.dependencies import get_sentiment_service
@@ -11,6 +13,7 @@ from app.models.schemas import (
     BatchSentimentRequest,
     BatchSentimentResponse,
     ErrorResponse,
+    ModelInfoResponse,
     SentimentRequest,
     SentimentResponse,
 )
@@ -35,6 +38,25 @@ def versioned_health(service: SentimentService = Depends(get_sentiment_service))
         "model": service.model_name,
         "pipeline_loaded": service.is_loaded,
     }
+
+
+@router.get("/info", response_model=ModelInfoResponse, tags=["meta"], summary="Model and API configuration")
+def model_info():
+    """Return static configuration values for the running model and API.
+
+    Useful for clients that need to know the batch size cap or token budget
+    before submitting requests, without having to parse OpenAPI docs.
+    """
+    try:
+        api_version = _pkg_version("sentiment-api")
+    except Exception:
+        api_version = "unknown"
+    return ModelInfoResponse(
+        model=settings.model_name,
+        max_length=settings.max_length,
+        max_batch_size=settings.max_batch_size,
+        version=api_version,
+    )
 
 
 @router.post(
