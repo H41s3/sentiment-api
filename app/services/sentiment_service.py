@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from app.models.schemas import SentimentResult
 from app.utils.text import preprocess
 
@@ -27,6 +29,7 @@ class SentimentService:
         self.max_length = max_length
         self._pipeline = None
         self._inference_count: int = 0
+        self._loaded_at: datetime | None = None
 
     def load(self) -> None:
         """Download (or load from local cache) the model weights and initialize the pipeline."""
@@ -44,6 +47,7 @@ class SentimentService:
             # transformers not installed — fall back to the keyword stub so
             # lightweight deployments and the test suite work without ML deps.
             self._pipeline = "stub"
+        self._loaded_at = datetime.now(tz=timezone.utc)
 
     def warm_up(self) -> None:
         """Run one dummy inference to trigger PyTorch JIT kernel compilation.
@@ -63,6 +67,7 @@ class SentimentService:
         means VRAM stays occupied until the driver releases the CUDA context.
         """
         self._pipeline = None
+        self._loaded_at = None
 
     def analyze(self, text: str) -> SentimentResult:
         """Preprocess and classify a single text string.
@@ -131,3 +136,7 @@ class SentimentService:
     @property
     def inference_count(self) -> int:
         return self._inference_count
+
+    @property
+    def loaded_at(self) -> datetime | None:
+        return self._loaded_at
