@@ -148,3 +148,39 @@ def test_analyze_strips_html(stub_client):
 def test_analyze_handles_url_in_text(stub_client):
     response = stub_client.post("/api/v1/analyze", json={"text": "Check https://example.com it is great"})
     assert response.status_code == 200
+
+
+# --- /api/v1/info ---
+
+def test_info_returns_200(stub_client):
+    response = stub_client.get("/api/v1/info")
+    assert response.status_code == 200
+
+
+def test_info_response_shape(stub_client):
+    body = stub_client.get("/api/v1/info").json()
+    assert "model" in body
+    assert "max_length" in body
+    assert "max_batch_size" in body
+    assert "version" in body
+    assert "inference_count" in body
+
+
+def test_info_inference_count_increments(stub_client):
+    before = stub_client.get("/api/v1/info").json()["inference_count"]
+    stub_client.post("/api/v1/analyze", json={"text": "great"})
+    after = stub_client.get("/api/v1/info").json()["inference_count"]
+    assert after == before + 1
+
+
+def test_info_inference_count_increments_by_batch_size(stub_client):
+    before = stub_client.get("/api/v1/info").json()["inference_count"]
+    stub_client.post("/api/v1/analyze/batch", json={"texts": ["great", "terrible", "ok"]})
+    after = stub_client.get("/api/v1/info").json()["inference_count"]
+    assert after == before + 3
+
+
+def test_info_max_batch_size_matches_config(stub_client):
+    from app.config import settings
+    body = stub_client.get("/api/v1/info").json()
+    assert body["max_batch_size"] == settings.max_batch_size

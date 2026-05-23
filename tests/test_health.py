@@ -85,3 +85,28 @@ def test_analyze_passes_with_correct_key(auth_client, monkeypatch):
     )
     assert response.status_code == 200
     assert "processing_ms" in response.json()
+
+
+# --- /health/ready with loaded_at ---
+
+def test_readiness_includes_loaded_at_when_model_ready():
+    from datetime import datetime, timezone
+    service = SentimentService(model_name="test-stub", max_length=512)
+    service._pipeline = "stub"
+    service._loaded_at = datetime.now(tz=timezone.utc)
+    app.dependency_overrides[get_sentiment_service] = lambda: service
+    try:
+        c = TestClient(app)
+        response = c.get("/health/ready")
+        assert response.status_code == 200
+        body = response.json()
+        assert "loaded_at" in body
+        assert body["loaded_at"] is not None
+    finally:
+        app.dependency_overrides.clear()
+
+
+def test_readiness_503_has_no_loaded_at(unloaded_client):
+    response = unloaded_client.get("/health/ready")
+    assert response.status_code == 503
+    assert "loaded_at" not in response.json()
