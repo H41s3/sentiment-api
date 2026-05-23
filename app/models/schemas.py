@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, Field
 
@@ -22,7 +22,7 @@ class SentimentRequest(BaseModel):
 
 
 class SentimentResult(BaseModel):
-    label: str = Field(..., examples=["POSITIVE"])
+    label: Literal["POSITIVE", "NEGATIVE", "NEUTRAL"] = Field(..., examples=["POSITIVE"])
     # score is the model's confidence, not a sentiment polarity score.
     # A NEGATIVE result with score=0.99 means the model is 99% confident it's negative.
     score: float = Field(..., ge=0.0, le=1.0, examples=[0.9998])
