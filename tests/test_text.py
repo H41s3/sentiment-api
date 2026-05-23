@@ -37,3 +37,27 @@ def test_handles_mixed_html_and_url():
 
 def test_empty_tags_collapse_to_nothing():
     assert preprocess("before<br/>after") == "before after"
+
+
+def test_strips_null_bytes():
+    assert preprocess("hello\x00world") == "helloworld"
+
+
+def test_strips_bell_character():
+    assert preprocess("hello\x07world") == "helloworld"
+
+
+def test_strips_form_feed():
+    assert preprocess("page1\x0cpage2") == "page1page2"
+
+
+def test_strips_mixed_control_chars():
+    assert preprocess("\x01\x02good \x03product\x04") == "good product"
+
+
+def test_preserves_tab_as_whitespace():
+    assert preprocess("hello\tworld") == "hello world"
+
+
+def test_preserves_newline_as_whitespace():
+    assert preprocess("line1\nline2") == "line1 line2"
