@@ -80,7 +80,7 @@ app.include_router(sentiment.router, prefix="/api/v1")
 @app.get("/health", tags=["meta"])
 def health_check():
     """Top-level health check kept for backwards compatibility."""
-    return {"status": "ok", "model": settings.model_name}
+    return {"status": "ok", "model": settings.model_name, "version": app.version}
 
 
 @app.get("/health/live", tags=["meta"], summary="Liveness probe")
