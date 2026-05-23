@@ -55,7 +55,7 @@ async def analyze_sentiment(
     pass. processing_ms reflects inference time only — not network or
     serialization overhead — making it a clean signal for model latency.
     """
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     t0 = time.perf_counter()
     result = await loop.run_in_executor(None, service.analyze, request.text)
     processing_ms = round((time.perf_counter() - t0) * 1000, 2)
@@ -98,7 +98,7 @@ async def analyze_batch(
                 ),
             },
         )
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     t0 = time.perf_counter()
     sentiments = await loop.run_in_executor(None, service.analyze_batch, request.texts)
     processing_ms = round((time.perf_counter() - t0) * 1000, 2)
