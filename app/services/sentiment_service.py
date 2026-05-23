@@ -26,6 +26,7 @@ class SentimentService:
         self.model_name = model_name
         self.max_length = max_length
         self._pipeline = None
+        self._inference_count: int = 0
 
     def load(self) -> None:
         """Download (or load from local cache) the model weights and initialize the pipeline."""
@@ -74,12 +75,15 @@ class SentimentService:
             self.load()
         text = preprocess(text)
         if self._pipeline == "stub":
-            return self._stub_analyze(text)
-        result = self._pipeline(text)[0]
-        return SentimentResult(
-            label=_LABEL_MAP.get(result["label"], result["label"]),
-            score=result["score"],
-        )
+            result = self._stub_analyze(text)
+        else:
+            raw = self._pipeline(text)[0]
+            result = SentimentResult(
+                label=_LABEL_MAP.get(raw["label"], raw["label"]),
+                score=raw["score"],
+            )
+        self._inference_count += 1
+        return result
 
     def analyze_batch(self, texts: list[str]) -> list[SentimentResult]:
         """Preprocess and classify a list of texts in a single forward pass.
@@ -93,15 +97,17 @@ class SentimentService:
             self.load()
         preprocessed = [preprocess(t) for t in texts]
         if self._pipeline == "stub":
-            return [self._stub_analyze(t) for t in preprocessed]
-        results = self._pipeline(preprocessed)
-        return [
-            SentimentResult(
-                label=_LABEL_MAP.get(r["label"], r["label"]),
-                score=r["score"],
-            )
-            for r in results
-        ]
+            items = [self._stub_analyze(t) for t in preprocessed]
+        else:
+            items = [
+                SentimentResult(
+                    label=_LABEL_MAP.get(r["label"], r["label"]),
+                    score=r["score"],
+                )
+                for r in self._pipeline(preprocessed)
+            ]
+        self._inference_count += len(items)
+        return items
 
     def _stub_analyze(self, text: str) -> SentimentResult:
         """Keyword-based fallback used when the real pipeline is unavailable.
@@ -121,3 +127,7 @@ class SentimentService:
     @property
     def is_loaded(self) -> bool:
         return self._pipeline is not None
+
+    @property
+    def inference_count(self) -> int:
+        return self._inference_count
