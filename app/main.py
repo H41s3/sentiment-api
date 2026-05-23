@@ -107,4 +107,8 @@ def readiness(service: SentimentService = Depends(get_sentiment_service)):
             status_code=503,
             content={"status": "unavailable", "reason": "model not loaded"},
         )
-    return {"status": "ok", "model": settings.model_name}
+    return {
+        "status": "ok",
+        "model": settings.model_name,
+        "loaded_at": service.loaded_at.isoformat() if service.loaded_at else None,
+    }
