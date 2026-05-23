@@ -11,7 +11,10 @@ from app.middleware import LoggingMiddleware
 from app.routes import sentiment
 from app.services.sentiment_service import SentimentService
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s  %(levelname)s  %(name)s  %(message)s")
+logging.basicConfig(
+    level=settings.log_level.upper(),
+    format="%(asctime)s  %(levelname)s  %(name)s  %(message)s",
+)
 
 _log = logging.getLogger("sentiment_api")
 

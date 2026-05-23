@@ -34,6 +34,9 @@ class Settings(BaseSettings):
 
     max_batch_size: int = 32
 
+    # Standard Python logging level name. Accepts DEBUG, INFO, WARNING, ERROR, CRITICAL.
+    log_level: str = "INFO"
+
     class Config:
         env_file = ".env"
 
@@ -46,6 +49,9 @@ class Settings(BaseSettings):
             raise ValueError("WEB_CONCURRENCY must be at least 1")
         if not (1 <= self.max_batch_size <= 128):
             raise ValueError("MAX_BATCH_SIZE must be between 1 and 128")
+        import logging
+        if self.log_level.upper() not in logging._nameToLevel:
+            raise ValueError(f"LOG_LEVEL must be one of {list(logging._nameToLevel)}")
         return self
 
 
