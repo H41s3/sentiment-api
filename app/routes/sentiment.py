@@ -41,11 +41,12 @@ def versioned_health(service: SentimentService = Depends(get_sentiment_service))
 
 
 @router.get("/info", response_model=ModelInfoResponse, tags=["meta"], summary="Model and API configuration")
-def model_info():
-    """Return static configuration values for the running model and API.
+def model_info(service: SentimentService = Depends(get_sentiment_service)):
+    """Return configuration and live stats for the running model.
 
     Useful for clients that need to know the batch size cap or token budget
     before submitting requests, without having to parse OpenAPI docs.
+    inference_count is a per-worker counter that resets on process restart.
     """
     try:
         api_version = _pkg_version("sentiment-api")
@@ -56,6 +57,7 @@ def model_info():
         max_length=settings.max_length,
         max_batch_size=settings.max_batch_size,
         version=api_version,
+        inference_count=service.inference_count,
     )
 
 

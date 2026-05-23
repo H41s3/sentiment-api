@@ -58,3 +58,4 @@ class ModelInfoResponse(BaseModel):
     max_length: int
     max_batch_size: int
     version: str
+    inference_count: int = Field(..., description="Total texts classified by this worker since startup")
