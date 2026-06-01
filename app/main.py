@@ -1,5 +1,8 @@
 import logging
+import sys
 from contextlib import asynccontextmanager
+
+from pythonjsonlogger import jsonlogger
 
 from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -14,10 +17,10 @@ from app.middleware import LoggingMiddleware
 from app.routes import sentiment
 from app.services.sentiment_service import SentimentService
 
-logging.basicConfig(
-    level=settings.log_level.upper(),
-    format="%(asctime)s  %(levelname)s  %(name)s  %(message)s",
-)
+_handler = logging.StreamHandler(sys.stdout)
+_handler.setFormatter(jsonlogger.JsonFormatter("%(asctime)s %(levelname)s %(name)s %(message)s"))
+logging.root.setLevel(settings.log_level.upper())
+logging.root.handlers = [_handler]
 
 _log = logging.getLogger("sentiment_api")
 
