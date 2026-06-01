@@ -66,6 +66,8 @@ def test_analyze_response_shape(stub_client):
     assert "text" in body
     assert "sentiment" in body
     assert "model" in body
+    assert "processing_ms" in body
+    assert isinstance(body["processing_ms"], float)
 
 
 # --- batch analyze ---
@@ -205,3 +207,49 @@ def test_info_max_batch_size_matches_config(stub_client):
 
     body = stub_client.get("/api/v1/info").json()
     assert body["max_batch_size"] == settings.max_batch_size
+
+
+# --- avg_inference_ms ---
+
+
+def test_info_avg_inference_ms_in_response(stub_client):
+    body = stub_client.get("/api/v1/info").json()
+    assert "avg_inference_ms" in body
+    assert isinstance(body["avg_inference_ms"], float)
+
+
+def test_info_avg_inference_ms_is_zero_before_inference(stub_client):
+    body = stub_client.get("/api/v1/info").json()
+    assert body["avg_inference_ms"] == 0.0
+
+
+def test_info_avg_inference_ms_positive_after_inference(stub_client):
+    stub_client.post("/api/v1/analyze", json={"text": "great product"})
+    body = stub_client.get("/api/v1/info").json()
+    assert body["avg_inference_ms"] >= 0.0
+
+
+# --- 500 error handler ---
+
+
+def test_500_handler_returns_json_error(monkeypatch):
+    from app.services import sentiment_service
+    from app.dependencies import get_sentiment_service
+
+    service = sentiment_service.SentimentService(model_name="test-stub", max_length=512)
+    service._pipeline = "stub"
+    app.dependency_overrides[get_sentiment_service] = lambda: service
+
+    def boom(self, text):
+        raise RuntimeError("unexpected crash")
+
+    monkeypatch.setattr(sentiment_service.SentimentService, "analyze", boom)
+    # raise_server_exceptions=False lets the global exception handler run
+    # instead of re-raising the error inside the test
+    error_client = TestClient(app, raise_server_exceptions=False)
+    response = error_client.post("/api/v1/analyze", json={"text": "hello"})
+    app.dependency_overrides.clear()
+    assert response.status_code == 500
+    body = response.json()
+    assert body["error"] == "internal_error"
+    assert "message" in body
