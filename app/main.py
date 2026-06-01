@@ -4,9 +4,12 @@ from contextlib import asynccontextmanager
 from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 
 from app.config import settings
 from app.dependencies import get_sentiment_service
+from app.limiter import limiter
 from app.middleware import LoggingMiddleware
 from app.routes import sentiment
 from app.services.sentiment_service import SentimentService
@@ -50,6 +53,9 @@ app = FastAPI(
     description="REST API for text sentiment analysis using HuggingFace Transformers",
     lifespan=lifespan,
 )
+
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
 @app.exception_handler(Exception)

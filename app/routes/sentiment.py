@@ -1,13 +1,13 @@
 import asyncio
 import time
-
-from fastapi import APIRouter, Depends, HTTPException
-
 from importlib.metadata import version as _pkg_version
+
+from fastapi import APIRouter, Depends, HTTPException, Request
 
 from app.auth import verify_api_key
 from app.config import settings
 from app.dependencies import get_sentiment_service
+from app.limiter import limiter
 from app.models.schemas import (
     BatchSentimentItem,
     BatchSentimentRequest,
@@ -69,8 +69,10 @@ def model_info(service: SentimentService = Depends(get_sentiment_service)):
     summary="Analyze sentiment of a single text",
     dependencies=[Depends(verify_api_key)],
 )
+@limiter.limit("60/minute")
 async def analyze_sentiment(
-    request: SentimentRequest,
+    request: Request,
+    body: SentimentRequest,
     service: SentimentService = Depends(get_sentiment_service),
 ):
     """Run sentiment classification on a single text input.
@@ -82,10 +84,10 @@ async def analyze_sentiment(
     """
     loop = asyncio.get_running_loop()
     t0 = time.perf_counter()
-    result = await loop.run_in_executor(None, service.analyze, request.text)
+    result = await loop.run_in_executor(None, service.analyze, body.text)
     processing_ms = round((time.perf_counter() - t0) * 1000, 2)
     return SentimentResponse(
-        text=request.text,
+        text=body.text,
         sentiment=result,
         model=service.model_name,
         processing_ms=processing_ms,
@@ -99,8 +101,10 @@ async def analyze_sentiment(
     summary="Analyze sentiment of multiple texts",
     dependencies=[Depends(verify_api_key)],
 )
+@limiter.limit("20/minute")
 async def analyze_batch(
-    request: BatchSentimentRequest,
+    request: Request,
+    body: BatchSentimentRequest,
     service: SentimentService = Depends(get_sentiment_service),
 ):
     """Run sentiment classification on a batch of texts in a single forward pass.
@@ -112,22 +116,22 @@ async def analyze_batch(
     The batch size cap is checked here (not in the schema) so it can be tuned
     via MAX_BATCH_SIZE without a code change or redeploy.
     """
-    if len(request.texts) > settings.max_batch_size:
+    if len(body.texts) > settings.max_batch_size:
         raise HTTPException(
             status_code=400,
             detail={
                 "error": "batch_too_large",
                 "message": (
-                    f"Batch size {len(request.texts)} exceeds the configured "
+                    f"Batch size {len(body.texts)} exceeds the configured "
                     f"maximum of {settings.max_batch_size}."
                 ),
             },
         )
     loop = asyncio.get_running_loop()
     t0 = time.perf_counter()
-    sentiments = await loop.run_in_executor(None, service.analyze_batch, request.texts)
+    sentiments = await loop.run_in_executor(None, service.analyze_batch, body.texts)
     processing_ms = round((time.perf_counter() - t0) * 1000, 2)
-    items = [BatchSentimentItem(text=t, sentiment=s) for t, s in zip(request.texts, sentiments)]
+    items = [BatchSentimentItem(text=t, sentiment=s) for t, s in zip(body.texts, sentiments)]
     return BatchSentimentResponse(
         results=items,
         model=service.model_name,
