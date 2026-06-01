@@ -3,8 +3,30 @@ from datetime import datetime, timezone
 from app.models.schemas import SentimentResult
 from app.utils.text import preprocess
 
-_POSITIVE_WORDS = {"love", "great", "good", "excellent", "awesome", "happy", "fantastic", "wonderful", "best", "perfect"}
-_NEGATIVE_WORDS = {"hate", "bad", "terrible", "awful", "horrible", "sad", "worst", "poor", "disgusting", "broken"}
+_POSITIVE_WORDS = {
+    "love",
+    "great",
+    "good",
+    "excellent",
+    "awesome",
+    "happy",
+    "fantastic",
+    "wonderful",
+    "best",
+    "perfect",
+}
+_NEGATIVE_WORDS = {
+    "hate",
+    "bad",
+    "terrible",
+    "awful",
+    "horrible",
+    "sad",
+    "worst",
+    "poor",
+    "disgusting",
+    "broken",
+}
 
 # Some fine-tuned checkpoints emit generic LABEL_0/LABEL_1 instead of human-readable
 # sentiment names. This map normalizes them at the service layer so the API
@@ -29,12 +51,14 @@ class SentimentService:
         self.max_length = max_length
         self._pipeline = None
         self._inference_count: int = 0
+        self._total_inference_ms: float = 0.0
         self._loaded_at: datetime | None = None
 
     def load(self) -> None:
         """Download (or load from local cache) the model weights and initialize the pipeline."""
         try:
             from transformers import pipeline
+
             self._pipeline = pipeline(
                 "sentiment-analysis",
                 model=self.model_name,
