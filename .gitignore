@@ -49,3 +49,6 @@ htmlcov/
 
 # Claude Code
 .claude/
+
+# Local scratch / staging area
+scratch.py

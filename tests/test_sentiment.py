@@ -8,6 +8,7 @@ client = TestClient(app)
 
 # --- health ---
 
+
 def test_health_check():
     response = client.get("/health")
     assert response.status_code == 200
@@ -24,6 +25,7 @@ def test_versioned_health(stub_client):
 
 # --- single analyze ---
 
+
 def test_analyze_rejects_empty_text():
     response = client.post("/api/v1/analyze", json={"text": ""})
     assert response.status_code == 422
@@ -34,8 +36,15 @@ def test_analyze_rejects_text_too_long():
     assert response.status_code == 422
 
 
+def test_analyze_rejects_whitespace_only_text():
+    response = client.post("/api/v1/analyze", json={"text": "   "})
+    assert response.status_code == 422
+
+
 def test_analyze_positive(stub_client):
-    response = stub_client.post("/api/v1/analyze", json={"text": "I love this product, it is great!"})
+    response = stub_client.post(
+        "/api/v1/analyze", json={"text": "I love this product, it is great!"}
+    )
     assert response.status_code == 200
     body = response.json()
     assert body["sentiment"]["label"] == "POSITIVE"
@@ -60,6 +69,7 @@ def test_analyze_response_shape(stub_client):
 
 
 # --- batch analyze ---
+
 
 def test_batch_analyze_basic(stub_client):
     payload = {"texts": ["I love this!", "This is bad"]}
@@ -93,6 +103,7 @@ def test_batch_each_item_has_shape(stub_client):
 
 # --- API key auth ---
 
+
 def test_analyze_no_key_when_auth_disabled(stub_client):
     """When API_KEY is not set, requests without a key should pass."""
     response = stub_client.post("/api/v1/analyze", json={"text": "I love this"})
@@ -101,6 +112,7 @@ def test_analyze_no_key_when_auth_disabled(stub_client):
 
 def test_analyze_rejects_wrong_key(stub_client, monkeypatch):
     from app import config
+
     monkeypatch.setattr(config.settings, "api_key", "secret-key")
     response = stub_client.post(
         "/api/v1/analyze",
@@ -112,6 +124,7 @@ def test_analyze_rejects_wrong_key(stub_client, monkeypatch):
 
 def test_analyze_accepts_correct_key(stub_client, monkeypatch):
     from app import config
+
     monkeypatch.setattr(config.settings, "api_key", "secret-key")
     response = stub_client.post(
         "/api/v1/analyze",
@@ -122,6 +135,7 @@ def test_analyze_accepts_correct_key(stub_client, monkeypatch):
 
 
 # --- X-Request-ID header ---
+
 
 def test_response_includes_request_id(stub_client):
     response = stub_client.post("/api/v1/analyze", json={"text": "Hello"})
@@ -139,18 +153,24 @@ def test_response_echoes_provided_request_id(stub_client):
 
 # --- preprocessing ---
 
+
 def test_analyze_strips_html(stub_client):
-    response = stub_client.post("/api/v1/analyze", json={"text": "<b>I love</b> this great product"})
+    response = stub_client.post(
+        "/api/v1/analyze", json={"text": "<b>I love</b> this great product"}
+    )
     assert response.status_code == 200
     assert response.json()["sentiment"]["label"] == "POSITIVE"
 
 
 def test_analyze_handles_url_in_text(stub_client):
-    response = stub_client.post("/api/v1/analyze", json={"text": "Check https://example.com it is great"})
+    response = stub_client.post(
+        "/api/v1/analyze", json={"text": "Check https://example.com it is great"}
+    )
     assert response.status_code == 200
 
 
 # --- /api/v1/info ---
+
 
 def test_info_returns_200(stub_client):
     response = stub_client.get("/api/v1/info")
@@ -182,5 +202,6 @@ def test_info_inference_count_increments_by_batch_size(stub_client):
 
 def test_info_max_batch_size_matches_config(stub_client):
     from app.config import settings
+
     body = stub_client.get("/api/v1/info").json()
     assert body["max_batch_size"] == settings.max_batch_size
