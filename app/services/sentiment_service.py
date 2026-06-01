@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+import time
 
 from app.models.schemas import SentimentResult
 from app.utils.text import preprocess
@@ -103,6 +104,7 @@ class SentimentService:
         if self._pipeline is None:
             self.load()
         text = preprocess(text)
+        _t0 = time.perf_counter()
         if self._pipeline == "stub":
             result = self._stub_analyze(text)
         else:
@@ -112,6 +114,7 @@ class SentimentService:
                 score=raw["score"],
             )
         self._inference_count += 1
+        self._total_inference_ms += (time.perf_counter() - _t0) * 1000
         return result
 
     def analyze_batch(self, texts: list[str]) -> list[SentimentResult]:
@@ -125,6 +128,7 @@ class SentimentService:
         if self._pipeline is None:
             self.load()
         preprocessed = [preprocess(t) for t in texts]
+        _t0 = time.perf_counter()
         if self._pipeline == "stub":
             items = [self._stub_analyze(t) for t in preprocessed]
         else:
@@ -136,6 +140,7 @@ class SentimentService:
                 for r in self._pipeline(preprocessed)
             ]
         self._inference_count += len(items)
+        self._total_inference_ms += (time.perf_counter() - _t0) * 1000
         return items
 
     def _stub_analyze(self, text: str) -> SentimentResult:
@@ -164,3 +169,9 @@ class SentimentService:
     @property
     def loaded_at(self) -> datetime | None:
         return self._loaded_at
+
+    @property
+    def avg_inference_ms(self) -> float:
+        if self._inference_count == 0:
+            return 0.0
+        return round(self._total_inference_ms / self._inference_count, 2)
