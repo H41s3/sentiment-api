@@ -69,3 +69,6 @@ class ModelInfoResponse(BaseModel):
     inference_count: int = Field(
         ..., description="Total texts classified by this worker since startup"
     )
+    avg_inference_ms: float = Field(
+        ..., description="Average inference time per text in milliseconds since startup"
+    )

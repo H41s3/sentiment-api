@@ -58,6 +58,7 @@ def model_info(service: SentimentService = Depends(get_sentiment_service)):
         max_batch_size=settings.max_batch_size,
         version=api_version,
         inference_count=service.inference_count,
+        avg_inference_ms=service.avg_inference_ms,
     )
 
 
