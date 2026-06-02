@@ -1,5 +1,7 @@
 import logging
 import sys
+from prometheus_fastapi_instrumentator import Instrumentator
+from app.metrics import MODEL_LOADED
 from contextlib import asynccontextmanager
 
 from pythonjsonlogger import jsonlogger
@@ -44,9 +46,11 @@ async def lifespan(app: FastAPI):
     )
     service = get_sentiment_service()
     service.load()
+    MODEL_LOADED.set(1)
     service.warm_up()
     yield
     service.unload()
+    MODEL_LOADED.set(0)
     _log.info("Sentiment API shut down — model weights released")
 
 
@@ -56,6 +60,8 @@ app = FastAPI(
     description="REST API for text sentiment analysis using HuggingFace Transformers",
     lifespan=lifespan,
 )
+
+Instrumentator().instrument(app).expose(app, endpoint="/metrics", include_in_schema=False)
 
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
