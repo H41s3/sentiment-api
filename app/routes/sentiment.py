@@ -18,6 +18,8 @@ from app.models.schemas import (
     SentimentResponse,
 )
 from app.services.sentiment_service import SentimentService
+from app.metrics import INFERENCE_DURATION_SECONDS, INFERENCE_REQUESTS_TOTAL
+
 
 # Reused across routes so the 401 shape is documented consistently in OpenAPI
 # without repeating the dict literal everywhere.
@@ -40,7 +42,9 @@ def versioned_health(service: SentimentService = Depends(get_sentiment_service))
     }
 
 
-@router.get("/info", response_model=ModelInfoResponse, tags=["meta"], summary="Model and API configuration")
+@router.get(
+    "/info", response_model=ModelInfoResponse, tags=["meta"], summary="Model and API configuration"
+)
 def model_info(service: SentimentService = Depends(get_sentiment_service)):
     """Return configuration and live stats for the running model.
 
@@ -86,6 +90,8 @@ async def analyze_sentiment(
     t0 = time.perf_counter()
     result = await loop.run_in_executor(None, service.analyze, body.text)
     processing_ms = round((time.perf_counter() - t0) * 1000, 2)
+    INFERENCE_REQUESTS_TOTAL.labels(endpoint="single", label=result.label).inc()
+    INFERENCE_DURATION_SECONDS.labels(endpoint="single").observe(processing_ms / 1000)
     return SentimentResponse(
         text=body.text,
         sentiment=result,
@@ -131,6 +137,9 @@ async def analyze_batch(
     t0 = time.perf_counter()
     sentiments = await loop.run_in_executor(None, service.analyze_batch, body.texts)
     processing_ms = round((time.perf_counter() - t0) * 1000, 2)
+    for _r in sentiments:
+        INFERENCE_REQUESTS_TOTAL.labels(endpoint="batch", label=_r.label).inc()
+    INFERENCE_DURATION_SECONDS.labels(endpoint="batch").observe(processing_ms / 1000)
     items = [BatchSentimentItem(text=t, sentiment=s) for t, s in zip(body.texts, sentiments)]
     return BatchSentimentResponse(
         results=items,
