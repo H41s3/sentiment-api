@@ -18,3 +18,8 @@ def test_metrics_contains_http_requests_metric():
     client.get("/health/live")
     response = client.get("./metrics")
     assert "http_requests_total" in response.text
+
+
+def test_metrics_contains_model_loaded_gauge():
+    response = client.get("/metrics")
+    assert "sentiment_model_loaded" in response.text
