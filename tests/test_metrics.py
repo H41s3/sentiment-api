@@ -23,3 +23,9 @@ def test_metrics_contains_http_requests_metric():
 def test_metrics_contains_model_loaded_gauge():
     response = client.get("/metrics")
     assert "sentiment_model_loaded" in response.text
+
+
+def test_inference_counter_increments_after_analyze():
+    client.post("/api/v1/analyze", json={"text": "I love this"})
+    response = client.get("/metrics")
+    assert "sentiment_inference_requests_total" in response.text
