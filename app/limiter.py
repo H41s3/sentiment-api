@@ -1,9 +1,13 @@
-from starlette.requests import Request
 from slowapi import Limiter
 from slowapi.util import get_remote_address
+from starlette.requests import Request
 
 
 def _rate_limit_key(request: Request) -> str:
     api_key = request.headers.get("x-api-key")
     if api_key:
         return f"key: {api_key}"  # prefix prevents collision with a literal IP string
+    return get_remote_address(request)
+
+
+limiter = Limiter(key_func=_rate_limit_key)
