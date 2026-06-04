@@ -6,7 +6,7 @@ from starlette.requests import Request
 def _rate_limit_key(request: Request) -> str:
     api_key = request.headers.get("x-api-key")
     if api_key:
-        return f"key: {api_key}"  # prefix prevents collision with a literal IP string
+        return f"key:{api_key}"  # prefix prevents collision with a literal IP string
     return get_remote_address(request)
 
 
