@@ -25,8 +25,14 @@ jobs:
           python-version: "3.12"
       - run: pip install uv
       - run: uv sync --group dev
-      - run: uv run pytest tests/
+      - run: pip install pytest-cov
+      - run: uv run pytest tests/ --cov=app --cov-fail-under=80
 
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t sentiment-api:ci .
 
 
 
