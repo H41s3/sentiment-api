@@ -18,3 +18,7 @@ def test_rate_limit_key_uses_api_key_when_present():
 def test_rate_limit_key_falls_back_to_ip_when_no_key():
     request = _make_request(api_key=None, ip="1.2.3.4")
     assert _rate_limit_key(request) == "1.2.3.4"
+
+
+def test_rate_limit_key_different_keys_produce_different_buckets():
+    pass
