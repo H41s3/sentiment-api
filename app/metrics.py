@@ -17,3 +17,4 @@ MODEL_LOADED = Gauge(
     "sentiment_model_loaded",
     "1 when the pipeline is loaded and ready, 0 otherwise",
 )
+BATCH_SIZE = Histogram()
