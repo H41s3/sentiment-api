@@ -23,3 +23,5 @@ def test_rate_limit_key_falls_back_to_ip_when_no_key():
 def test_rate_limit_key_different_keys_produce_different_buckets():
     r1 = _make_request(api_key="key-a")
     r2 = _make_request(api_key="key-b")
+
+def test_rate_limit_key_prefix_prevents_collision_with_ip():
