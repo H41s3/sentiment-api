@@ -23,9 +23,11 @@ def test_rate_limit_key_falls_back_to_ip_when_no_key():
 def test_rate_limit_key_different_keys_produce_different_buckets():
     r1 = _make_request(api_key="key-a")
     r2 = _make_request(api_key="key-b")
+    assert _rate_limit_key(r1) != _rate_limit_key(r2)
 
 
 def test_rate_limit_key_prefix_prevents_collision_with_ip():
     # an API key whose value is an IP string must not share a bucket with that IP
     r_key = _make_request(api_key="1.2.3.4")
     r_ip = _make_request(api_key=None, ip="1.2.3.4")
+    assert _rate_limit_key(r_key) != _rate_limit_key(r_ip)
