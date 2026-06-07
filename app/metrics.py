@@ -20,4 +20,5 @@ MODEL_LOADED = Gauge(
 BATCH_SIZE = Histogram(
     "sentiment_batch_size",
     "Number of texts submitted per batch request",
+    buckets=[1, 2, 5, 10, 25, 50, 100],
 )
