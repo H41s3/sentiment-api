@@ -25,3 +25,4 @@ def test_rate_limit_key_different_keys_produce_different_buckets():
     r2 = _make_request(api_key="key-b")
 
 def test_rate_limit_key_prefix_prevents_collision_with_ip():
+    # an API key whose value is an IP string must not share a bucket with that IP
