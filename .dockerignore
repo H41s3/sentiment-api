@@ -13,7 +13,6 @@ tests/
 *.md
 Makefile
 .editorconfig
-pyproject.toml
 docker-compose*.yml
 DECISIONS.md
 .claude/
