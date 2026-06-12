@@ -36,3 +36,15 @@ def test_inference_duration_histogram_present_after_analyze():
     client.post("/api/v1/analyze", json={"text": "great product"})
     response = client.get("/metrics")
     assert "sentiment_inference_duration_seconds" in response.text
+
+
+def test_batch_size_histogram_present_after_batch_analyze():
+    client.post("/api/v1/analyze/batch", json={"texts": ["Good", "Bad", "Okay"]})
+    response = client.get("/metrics")
+    assert "sentiment_batch_size" in response.text
+
+
+def test_batch_size_histogram_count_increments_per_request():
+    client.post("/api/v1/analyze/batch", json={"texts": ["one", "two", "three", "four", "five"]})
+    response = client.get("/metrics")
+    assert "sentiment_batch_size_count" in response.text
