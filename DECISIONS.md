@@ -249,6 +249,27 @@ bucket — a subtle bug that would be very hard to diagnose in production.
 
 ---
 
+## 14. Prometheus Metrics
+
+Three custom instruments are defined in `app/metrics.py`:
+
+| Metric | Type | Labels | What it measures |
+|---|---|---|---|
+| `sentiment_inference_requests_total` | Counter | `endpoint`, `label` | Total texts classified |
+| `sentiment_inference_duration_seconds` | Histogram | `endpoint` | Wall-clock inference time |
+| `sentiment_batch_size` | Histogram | — | Texts per batch request |
+| `sentiment_model_loaded` | Gauge | — | 1 when pipeline is ready |
+
+`prometheus_fastapi_instrumentator` adds HTTP-level metrics automatically
+(request count, latency by route). The custom metrics above are inference-
+specific — they only increment after the model forward pass completes, not
+for health checks or 400 errors, making them a clean signal for actual work.
+
+The `endpoint` label (`"single"` / `"batch"`) lets you split dashboards by
+call type without a separate metrics endpoint per route.
+
+---
+
 ## The Through-Line
 
 Every decision followed the same principle: **close the gap between what the code says and what
