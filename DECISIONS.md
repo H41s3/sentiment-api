@@ -220,6 +220,35 @@ the exact JSON structure they'll receive if their API key is wrong.
 
 ---
 
+## 13. Per-Key Rate Limiting
+
+```python
+# before — all clients at the same IP share one bucket
+limiter = Limiter(key_func=get_remote_address)
+
+# after — each API key gets its own independent bucket
+def _rate_limit_key(request: Request) -> str:
+    api_key = request.headers.get("x-api-key")
+    if api_key:
+        return f"key:{api_key}"  # prefix prevents collision with a literal IP string
+    return get_remote_address(request)
+```
+
+The original IP-based limiter has a real problem in production: multiple
+clients behind a shared NAT (an office, a cloud provider's egress IP) all
+count against the same bucket. One busy client can rate-limit everyone else
+at that address.
+
+Per-key limiting gives each API key its own independent counter. A client
+hitting their own limit doesn't affect anyone else. Unauthenticated traffic
+still falls back to IP — no behaviour change for clients without a key.
+
+The `"key:"` prefix is a deliberate collision guard: without it, an API key
+whose value happens to be an IP address would silently merge with that IP's
+bucket — a subtle bug that would be very hard to diagnose in production.
+
+---
+
 ## The Through-Line
 
 Every decision followed the same principle: **close the gap between what the code says and what
