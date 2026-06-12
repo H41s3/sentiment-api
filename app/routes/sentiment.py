@@ -8,6 +8,7 @@ from app.auth import verify_api_key
 from app.config import settings
 from app.dependencies import get_sentiment_service
 from app.limiter import limiter
+from app.metrics import BATCH_SIZE, INFERENCE_DURATION_SECONDS, INFERENCE_REQUESTS_TOTAL
 from app.models.schemas import (
     BatchSentimentItem,
     BatchSentimentRequest,
@@ -18,8 +19,6 @@ from app.models.schemas import (
     SentimentResponse,
 )
 from app.services.sentiment_service import SentimentService
-from app.metrics import BATCH_SIZE, INFERENCE_DURATION_SECONDS, INFERENCE_REQUESTS_TOTAL
-
 
 # Reused across routes so the 401 shape is documented consistently in OpenAPI
 # without repeating the dict literal everywhere.

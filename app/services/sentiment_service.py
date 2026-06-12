@@ -1,5 +1,5 @@
-from datetime import datetime, timezone
 import time
+from datetime import datetime, timezone
 
 from app.models.schemas import SentimentResult
 from app.utils.text import preprocess

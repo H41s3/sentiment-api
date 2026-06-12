@@ -1,20 +1,19 @@
 import logging
 import sys
-from prometheus_fastapi_instrumentator import Instrumentator
-from app.metrics import MODEL_LOADED
 from contextlib import asynccontextmanager
-
-from pythonjsonlogger import jsonlogger
 
 from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from prometheus_fastapi_instrumentator import Instrumentator
+from pythonjsonlogger import jsonlogger
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
 from app.config import settings
 from app.dependencies import get_sentiment_service
 from app.limiter import limiter
+from app.metrics import MODEL_LOADED
 from app.middleware import LoggingMiddleware
 from app.routes import sentiment
 from app.services.sentiment_service import SentimentService

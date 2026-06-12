@@ -1,4 +1,3 @@
-import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
@@ -233,8 +232,8 @@ def test_info_avg_inference_ms_positive_after_inference(stub_client):
 
 
 def test_500_handler_returns_json_error(monkeypatch):
-    from app.services import sentiment_service
     from app.dependencies import get_sentiment_service
+    from app.services import sentiment_service
 
     service = sentiment_service.SentimentService(model_name="test-stub", max_length=512)
     service._pipeline = "stub"
