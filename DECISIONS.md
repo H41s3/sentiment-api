@@ -270,6 +270,21 @@ call type without a separate metrics endpoint per route.
 
 ---
 
+## 15. GitHub Actions CI
+
+The workflow (`.github/workflows/ci.yml`) runs on every push and pull request:
+
+1. **Lint** — `ruff check app/ tests/` fails fast on syntax and import errors
+2. **Test** — `pytest tests/ -v` runs the full suite
+3. **Docker build** — `docker build` validates the image builds clean
+
+Ruff runs before pytest so import errors surface as lint failures (a clearer
+message) rather than as a confusing pytest collection error. The docker build
+step runs last — it's the slowest and only fails on packaging problems, not
+logic errors.
+
+---
+
 ## The Through-Line
 
 Every decision followed the same principle: **close the gap between what the code says and what
