@@ -18,7 +18,7 @@ from app.models.schemas import (
     SentimentResponse,
 )
 from app.services.sentiment_service import SentimentService
-from app.metrics import INFERENCE_DURATION_SECONDS, INFERENCE_REQUESTS_TOTAL
+from app.metrics import BATCH_SIZE, INFERENCE_DURATION_SECONDS, INFERENCE_REQUESTS_TOTAL
 
 
 # Reused across routes so the 401 shape is documented consistently in OpenAPI
@@ -136,6 +136,7 @@ async def analyze_batch(
     loop = asyncio.get_running_loop()
     t0 = time.perf_counter()
     sentiments = await loop.run_in_executor(None, service.analyze_batch, body.texts)
+    BATCH_SIZE.observe(len(body.texts))
     processing_ms = round((time.perf_counter() - t0) * 1000, 2)
     for _r in sentiments:
         INFERENCE_REQUESTS_TOTAL.labels(endpoint="batch", label=_r.label).inc()
