@@ -55,6 +55,21 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 API will be available at `http://localhost:8000`.
 Interactive docs: `http://localhost:8000/docs`
 
+## Observability
+
+Run Prometheus + Grafana alongside the API:
+
+```bash
+make observability
+```
+
+- Grafana: http://localhost:3000 (anonymous viewer access; admin/admin for the admin account)
+- Prometheus: http://localhost:9090
+
+The "Sentiment API" dashboard is pre-provisioned and shows inference request
+rate by label, p95 inference duration, batch size distribution, HTTP request
+rate, and whether the model is loaded.
+
 ## Example Requests
 
 **Single analysis:**
