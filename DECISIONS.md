@@ -285,6 +285,31 @@ logic errors.
 
 ---
 
+## 16. Observability Stack (Prometheus + Grafana)
+
+```yaml
+# docker-compose.observability.yml — an overlay, not a replacement
+services:
+  prometheus: ...   # scrapes api:8000/metrics every 15s
+  grafana: ...       # pre-provisioned datasource + dashboard
+```
+
+Commits 1-6 and 14-15 added Prometheus metrics to the API, but metrics that
+nobody looks at don't help anyone. This stack makes them visible without
+touching the core deployment: `docker-compose.observability.yml` is a second
+override file in the same spirit as `docker-compose.dev.yml` — `make
+observability` layers it on top of the base compose file, while `make run`
+and `make dev` remain exactly as they were.
+
+Grafana's datasource and dashboard are provisioned as files (under
+`grafana/provisioning/`), not configured by hand through the UI, so the whole
+stack comes up pre-wired on first run. Anonymous viewer access and a default
+admin password are acceptable here because this overlay is for local
+development and demos only — it is not part of the production Dockerfile or
+docker-compose.yml and should not be exposed publicly as configured.
+
+---
+
 ## The Through-Line
 
 Every decision followed the same principle: **close the gap between what the code says and what
