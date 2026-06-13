@@ -17,7 +17,7 @@ def test_metrics_content_type_is_prometheus():
 
 def test_metrics_contains_http_requests_metric():
     client.get("/health/live")
-    response = client.get("./metrics")
+    response = client.get("/metrics")
     assert "http_requests_total" in response.text
 
 
