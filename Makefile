@@ -1,4 +1,4 @@
-.PHONY: run dev test lint test-cov lint-fix docker-build docker-up
+.PHONY: run dev test lint test-cov lint-fix docker-build docker-up observability
 
 run:
 	uv run uvicorn app.main:app --reload --port 8000
@@ -20,6 +20,9 @@ docker-build:
 
 docker-up:
 	docker compose up
+
+observability:
+	docker compose -f docker-compose.yml -f docker-compose.observability.yml up
 
 dev:
 	docker compose -f docker-compose.yml -f docker-compose.dev.yml up
