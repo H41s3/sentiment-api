@@ -1,5 +1,5 @@
 from pydantic import model_validator
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     container crashes immediately with a clear error rather than silently
     misbehaving on the first request.
     """
+
+    model_config = SettingsConfigDict(env_file=".env", protected_namespaces=("settings_",))
 
     model_name: str = "distilbert-base-uncased-finetuned-sst-2-english"
 
@@ -36,9 +38,6 @@ class Settings(BaseSettings):
 
     # Standard Python logging level name. Accepts DEBUG, INFO, WARNING, ERROR, CRITICAL.
     log_level: str = "INFO"
-
-    class Config:
-        env_file = ".env"
 
     @model_validator(mode="after")
     def validate_settings(self) -> "Settings":
