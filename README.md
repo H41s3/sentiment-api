@@ -8,18 +8,28 @@ A REST API for real-time text sentiment analysis built with FastAPI and HuggingF
 - **POST /api/v1/analyze/batch** — classify up to 32 texts in one request
 - **GET /api/v1/health** — versioned liveness probe with model status
 - **GET /health** — root liveness probe for container orchestration
-- Pydantic v2 request/response validation
-- Request logging middleware (method, path, status, duration)
-- Dockerized for easy deployment
+- **GET /api/v1/info** — model configuration and live inference stats
+- Pydantic v2 request/response validation with strict schemas
+- Optional API key authentication (set `API_KEY` env var to enable)
+- Per-key rate limiting (60/min single, 20/min batch)
+- Security response headers (X-Content-Type-Options, X-Frame-Options, etc.)
+- Structured JSON logging with X-Request-ID tracing
+- Prometheus metrics + pre-built Grafana dashboard
+- Dockerized with non-root user for production deployment
 
 ## Tech Stack
 
 | Layer | Library |
 |---|---|
-| Framework | FastAPI + Uvicorn |
+| Framework | FastAPI + Uvicorn + Gunicorn |
 | ML Model | HuggingFace Transformers (DistilBERT SST-2) |
 | Validation | Pydantic v2 |
-| Testing | Pytest + HTTPX |
+| Auth | Optional API key (header-based) |
+| Rate Limiting | SlowAPI (per-key buckets) |
+| Metrics | Prometheus + Grafana |
+| Linting | Ruff (check + format) |
+| Testing | Pytest + pytest-cov (80% gate) |
+| CI | GitHub Actions (lint, test, Docker build) |
 | Container | Docker / Docker Compose |
 
 ## Quickstart
@@ -32,14 +42,14 @@ cd sentiment-api
 # 2. Create virtual environment
 python -m venv .venv && source .venv/bin/activate
 
-# 3. Install dependencies
-pip install -r requirements.txt
+# 3. Install dependencies (requires uv: https://docs.astral.sh/uv/)
+uv sync --group dev
 
 # 4. Copy env template
 cp .env.example .env
 
 # 5. Run locally
-uvicorn app.main:app --reload
+make run
 ```
 
 ## Docker
@@ -111,7 +121,11 @@ curl -X POST http://localhost:8000/api/v1/analyze/batch \
 ## Running Tests
 
 ```bash
-pytest tests/ -v
+make test          # run full suite
+make test-cov      # run with coverage report
+make lint          # ruff check
+make format        # ruff format
+make lint-fix      # auto-fix lint issues
 ```
 
 ## Project Structure
@@ -133,10 +147,20 @@ sentiment-api/
 │       └── text.py               # Text preprocessing
 ├── tests/
 │   ├── conftest.py               # Fixtures (client, stub_client)
-│   └── test_sentiment.py
+│   ├── test_sentiment.py         # Endpoint and auth tests
+│   ├── test_health.py            # Liveness and readiness probes
+│   ├── test_metrics.py           # Prometheus metric tests
+│   ├── test_config.py            # Settings validation
+│   ├── test_rate_limit.py        # Rate limit key function
+│   ├── test_text.py              # Text preprocessing
+│   ├── test_security_headers.py  # Security header middleware
+│   └── test_strict_schemas.py    # Extra field rejection
 ├── Dockerfile
 ├── docker-compose.yml
-└── requirements.txt
+├── docker-compose.dev.yml
+├── docker-compose.observability.yml
+├── Makefile
+└── pyproject.toml
 ```
 
 ## Environment Variables
@@ -144,10 +168,13 @@ sentiment-api/
 | Variable | Default | Description |
 |---|---|---|
 | `MODEL_NAME` | `distilbert-base-uncased-finetuned-sst-2-english` | HuggingFace model ID |
-| `MAX_LENGTH` | `512` | Max tokenizer length |
+| `MAX_LENGTH` | `512` | Max tokenizer length (64–2048) |
 | `PORT` | `8000` | Uvicorn port |
 | `API_KEY` | _(unset)_ | Optional API key — enforced on /analyze routes if set |
+| `CORS_ORIGINS` | `["*"]` | Allowed CORS origins |
 | `WEB_CONCURRENCY` | `2` | Number of gunicorn worker processes |
+| `MAX_BATCH_SIZE` | `32` | Max texts per batch request (1–128) |
+| `LOG_LEVEL` | `INFO` | Python logging level |
 
 ## Notes on the ML model
 
