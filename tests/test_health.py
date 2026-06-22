@@ -29,6 +29,7 @@ def unloaded_client():
 
 # --- /health/live ---
 
+
 def test_liveness_always_returns_200():
     response = client.get("/health/live")
     assert response.status_code == 200
@@ -41,6 +42,7 @@ def test_liveness_does_not_depend_on_model_state(unloaded_client):
 
 
 # --- /health/ready ---
+
 
 def test_readiness_ok_when_model_loaded(loaded_client):
     response = loaded_client.get("/health/ready")
@@ -58,6 +60,7 @@ def test_readiness_503_when_model_not_loaded(unloaded_client):
 
 # --- auth + analyze interaction ---
 
+
 @pytest.fixture
 def auth_client():
     """Client with stub service and API key auth enabled."""
@@ -70,6 +73,7 @@ def auth_client():
 
 def test_analyze_blocked_without_key_when_auth_enabled(auth_client, monkeypatch):
     from app import config
+
     monkeypatch.setattr(config.settings, "api_key", "prod-secret")
     response = auth_client.post("/api/v1/analyze", json={"text": "great product"})
     assert response.status_code == 401
@@ -77,6 +81,7 @@ def test_analyze_blocked_without_key_when_auth_enabled(auth_client, monkeypatch)
 
 def test_analyze_passes_with_correct_key(auth_client, monkeypatch):
     from app import config
+
     monkeypatch.setattr(config.settings, "api_key", "prod-secret")
     response = auth_client.post(
         "/api/v1/analyze",
@@ -89,8 +94,10 @@ def test_analyze_passes_with_correct_key(auth_client, monkeypatch):
 
 # --- /health/ready with loaded_at ---
 
+
 def test_readiness_includes_loaded_at_when_model_ready():
     from datetime import datetime, timezone
+
     service = SentimentService(model_name="test-stub", max_length=512)
     service._pipeline = "stub"
     service._loaded_at = datetime.now(tz=timezone.utc)

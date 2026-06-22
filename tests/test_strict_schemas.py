@@ -11,9 +11,7 @@ def test_analyze_rejects_extra_fields():
 
 
 def test_batch_rejects_extra_fields():
-    response = client.post(
-        "/api/v1/analyze/batch", json={"texts": ["hello"], "return_all": True}
-    )
+    response = client.post("/api/v1/analyze/batch", json={"texts": ["hello"], "return_all": True})
     assert response.status_code == 422
 
 

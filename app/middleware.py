@@ -45,7 +45,11 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         ms = (time.perf_counter() - start) * 1000
         logger.info(
             "[%s] %s %s -> %d  (%.1f ms)",
-            request_id, request.method, request.url.path, response.status_code, ms,
+            request_id,
+            request.method,
+            request.url.path,
+            response.status_code,
+            ms,
         )
         response.headers["x-request-id"] = request_id
         return response
