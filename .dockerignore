@@ -14,5 +14,8 @@ tests/
 Makefile
 .editorconfig
 docker-compose*.yml
-DECISIONS.md
 .claude/
+.github/
+grafana/
+prometheus.yml
+scratch.py

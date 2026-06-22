@@ -11,21 +11,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install ruff
-      - run: ruff check app tests
+      - run: uvx ruff check app tests
+
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install uv
       - run: uv sync --group dev
-      - run: pip install pytest-cov
       - run: uv run pytest tests/ --cov=app --cov-fail-under=80
 
   docker:
@@ -33,7 +37,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: docker build -t sentiment-api:ci .
-
-
-
 
