@@ -7,6 +7,22 @@ from starlette.requests import Request
 
 logger = logging.getLogger("sentiment_api")
 
+_SECURITY_HEADERS = {
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+    "Cache-Control": "no-store",
+}
+
+
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        for header, value in _SECURITY_HEADERS.items():
+            response.headers[header] = value
+        return response
+
 
 class LoggingMiddleware(BaseHTTPMiddleware):
     """Attaches a request ID to every request and emits a structured access log line.

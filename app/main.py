@@ -14,7 +14,7 @@ from app.config import settings
 from app.dependencies import get_sentiment_service
 from app.limiter import limiter
 from app.metrics import MODEL_LOADED
-from app.middleware import LoggingMiddleware
+from app.middleware import LoggingMiddleware, SecurityHeadersMiddleware
 from app.routes import sentiment
 from app.services.sentiment_service import SentimentService
 
@@ -82,6 +82,7 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
 # LoggingMiddleware wraps everything so it captures the true end-to-end latency
 # including CORS processing time.
 app.add_middleware(LoggingMiddleware)
+app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
