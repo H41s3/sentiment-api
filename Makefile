@@ -1,4 +1,4 @@
-.PHONY: run dev test lint test-cov lint-fix docker-build docker-up observability
+.PHONY: run dev test lint test-cov lint-fix format docker-build docker-up observability
 
 run:
 	uv run uvicorn app.main:app --reload --port 8000
@@ -14,6 +14,9 @@ test-cov:
 
 lint-fix:
 	uv run ruff check app/ tests/ --fix
+
+format:
+	uv run ruff format app/ tests/
 
 docker-build:
 	docker build -t sentiment-api .
