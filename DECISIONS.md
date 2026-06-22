@@ -310,6 +310,68 @@ docker-compose.yml and should not be exposed publicly as configured.
 
 ---
 
+## 17. Security Response Headers
+
+```python
+_SECURITY_HEADERS = {
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+    "Cache-Control": "no-store",
+}
+```
+
+A `SecurityHeadersMiddleware` sets these on every response. Even though
+this is a JSON API (not a web app serving HTML), these headers matter:
+
+- **nosniff** — prevents browsers from guessing Content-Type on API
+  responses, which blocks a class of XSS attacks where a browser treats
+  JSON as HTML.
+- **DENY framing** — stops an attacker from embedding API responses in
+  an iframe to extract data via clickjacking.
+- **Cache-Control: no-store** — API responses may contain user-submitted
+  text. Caching them on a shared proxy or CDN risks leaking one user's
+  data to another.
+- **Permissions-Policy** — explicitly opts out of browser APIs (camera,
+  mic, geolocation) that a JSON API has no business requesting.
+
+---
+
+## 18. Non-Root Docker User
+
+```dockerfile
+RUN groupadd --system appuser && useradd --system --gid appuser appuser \
+    && chown -R appuser:appuser /app
+USER appuser
+```
+
+If the application is compromised, a root-level container process can
+mount the host filesystem, modify other containers, or escalate to the
+host kernel. Running as a non-root user limits the blast radius to the
+`/app` directory. This is a baseline container hardening step required
+by most security scanners (Trivy, Snyk) and Kubernetes pod security
+policies.
+
+---
+
+## 19. Strict Request Schemas
+
+```python
+class SentimentRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    text: CleanText = ...
+```
+
+By default, Pydantic silently ignores unknown JSON keys. That means a
+client sending `{"text": "hello", "langauge": "en"}` gets a 200 back
+with no indication that `langauge` was ignored (and their intended
+language parameter did nothing). With `extra="forbid"`, that typo
+becomes a 422 immediately — a much better developer experience than
+silent data loss.
+
+---
+
 ## The Through-Line
 
 Every decision followed the same principle: **close the gap between what the code says and what
