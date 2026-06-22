@@ -1,6 +1,6 @@
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 # Shared type alias applied to every user-supplied text field.
 # Pydantic enforces these bounds at parse time, before any route handler runs.
@@ -19,6 +19,8 @@ class ErrorResponse(BaseModel):
 
 
 class SentimentRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     text: CleanText = Field(..., examples=["I love this!"])
 
     @field_validator("text")
@@ -44,6 +46,8 @@ class SentimentResponse(BaseModel):
 
 
 class BatchSentimentRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     texts: list[CleanText] = Field(..., min_length=1)
     # Upper bound is enforced in the route handler against settings.max_batch_size
     # so operators can tune it via MAX_BATCH_SIZE without a code change or redeploy.
