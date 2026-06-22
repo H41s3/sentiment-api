@@ -12,6 +12,10 @@ COPY . .
 # Pre-download model weights so first request isn't slow
 RUN uv run python -c "from transformers import pipeline; pipeline('sentiment-analysis', model='distilbert-base-uncased-finetuned-sst-2-english')" || true
 
+RUN groupadd --system appuser && useradd --system --gid appuser appuser \
+    && chown -R appuser:appuser /app
+USER appuser
+
 EXPOSE 8000
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
