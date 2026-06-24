@@ -39,6 +39,13 @@ class Settings(BaseSettings):
     # Standard Python logging level name. Accepts DEBUG, INFO, WARNING, ERROR, CRITICAL.
     log_level: str = "INFO"
 
+    # Shared storage backend for the rate limiter (slowapi/limits). When unset,
+    # each gunicorn worker keeps its own in-memory counter, so a "20/minute"
+    # limit becomes effectively WEB_CONCURRENCY x 20/minute and inconsistent
+    # across workers and replicas. Set to a Redis URL (e.g. redis://redis:6379/0)
+    # so every worker — and every replica — shares one counter.
+    redis_url: str | None = None
+
     @model_validator(mode="after")
     def validate_settings(self) -> "Settings":
         """Reject obviously wrong values before the app starts accepting traffic."""
