@@ -372,6 +372,36 @@ silent data loss.
 
 ---
 
+## 20. Redis-Backed Rate Limiting
+
+```python
+# before — every gunicorn worker has its own counter
+limiter = Limiter(key_func=_rate_limit_key)
+
+# after — workers share counters via Redis when REDIS_URL is set
+limiter = Limiter(key_func=_rate_limit_key, storage_uri=_storage_uri())
+```
+
+slowapi's default storage is an in-process dict. With `WEB_CONCURRENCY=2`,
+each gunicorn worker process gets its own copy — a client hitting the
+`20/minute` limit on `/api/v1/analyze` could actually make close to
+40 requests/minute through, depending on which worker handles each request.
+Running multiple replicas behind a load balancer multiplies this further.
+
+`_storage_uri()` returns `"memory://"` when `REDIS_URL` is unset, so local
+dev and the test suite are unaffected — the same "unset = old behaviour"
+pattern as `API_KEY`. The docker-compose stack sets
+`REDIS_URL=redis://redis:6379/0` and adds a `redis` service, so the
+containerized profile gets one shared counter across all workers and
+replicas.
+
+The `redis` dependency is only needed at runtime when `REDIS_URL` is set —
+the `limits` library (slowapi's dependency) imports it lazily. But the
+package must be installed for that import to succeed, so it's pinned in
+`pyproject.toml` unconditionally rather than as an optional extra.
+
+---
+
 ## The Through-Line
 
 Every decision followed the same principle: **close the gap between what the code says and what
