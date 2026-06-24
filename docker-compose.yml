@@ -5,4 +5,16 @@ services:
       - "${PORT:-8000}:8000"
     env_file:
       - .env
+    # REDIS_URL is set here (not in .env) so the containerized stack always
+    # uses shared counters.  "redis" resolves via compose's internal DNS.
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  # Shared rate-limit storage — all API workers and replicas write to this
+  # single Redis instance, fixing the per-worker counter drift bug.
+  redis:
+    image: redis:7-alpine
     restart: unless-stopped
