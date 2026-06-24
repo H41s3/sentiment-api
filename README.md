@@ -25,7 +25,7 @@ A REST API for real-time text sentiment analysis built with FastAPI and HuggingF
 | ML Model | HuggingFace Transformers (DistilBERT SST-2) |
 | Validation | Pydantic v2 |
 | Auth | Optional API key (header-based) |
-| Rate Limiting | SlowAPI (per-key buckets) |
+| Rate Limiting | SlowAPI (per-key buckets, optional Redis backend) |
 | Metrics | Prometheus + Grafana |
 | Linting | Ruff (check + format) |
 | Testing | Pytest + pytest-cov (80% gate) |
@@ -175,6 +175,7 @@ sentiment-api/
 | `WEB_CONCURRENCY` | `2` | Number of gunicorn worker processes |
 | `MAX_BATCH_SIZE` | `32` | Max texts per batch request (1–128) |
 | `LOG_LEVEL` | `INFO` | Python logging level |
+| `REDIS_URL` | _(unset)_ | Shared rate-limit storage across workers/replicas — falls back to per-worker in-memory counters if unset |
 
 ## Notes on the ML model
 
