@@ -36,6 +36,11 @@ def test_security_headers_present_on_api_routes(stub_client):
     assert response.headers["x-frame-options"] == "DENY"
 
 
+def test_strict_transport_security_header():
+    response = client.get("/health/live")
+    assert response.headers["strict-transport-security"] == "max-age=63072000; includeSubDomains"
+
+
 def test_security_headers_present_on_error_responses():
     response = client.post("/api/v1/analyze", json={"text": ""})
     assert response.status_code == 422

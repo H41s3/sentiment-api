@@ -13,6 +13,7 @@ _SECURITY_HEADERS = {
     "Referrer-Policy": "strict-origin-when-cross-origin",
     "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
     "Cache-Control": "no-store",
+    "Strict-Transport-Security": "max-age=63072000; includeSubDomains",
 }
 
 
