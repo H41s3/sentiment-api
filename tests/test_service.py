@@ -120,3 +120,23 @@ def test_auto_loads_on_first_batch_analyze():
     with patch.dict("sys.modules", {"transformers": None}):
         service.analyze_batch(["hello"])
     assert service.is_loaded is True
+
+
+def test_stub_score_capped_at_099():
+    service = _make_service()
+    result = service.analyze("love great good excellent awesome happy fantastic wonderful best perfect")
+    assert result.label == "POSITIVE"
+    assert result.score <= 0.99
+
+
+def test_warm_up_noop_on_stub():
+    service = _make_service()
+    service.warm_up()
+    assert service.is_loaded is True
+
+
+def test_analyze_single_word():
+    service = _make_service()
+    result = service.analyze("indifferent")
+    assert result.label == "NEUTRAL"
+    assert result.score == 0.5
