@@ -61,3 +61,28 @@ def test_preserves_tab_as_whitespace():
 
 def test_preserves_newline_as_whitespace():
     assert preprocess("line1\nline2") == "line1 line2"
+
+
+def test_multiple_urls_replaced():
+    result = preprocess("see https://a.com and https://b.com here")
+    assert result == "see [URL] and [URL] here"
+
+
+def test_url_at_start_of_text():
+    assert preprocess("https://example.com is great") == "[URL] is great"
+
+
+def test_url_at_end_of_text():
+    assert preprocess("visit https://example.com") == "visit [URL]"
+
+
+def test_all_html_input():
+    assert preprocess("<div><p><span></span></p></div>") == ""
+
+
+def test_self_closing_tags():
+    assert preprocess("line<br/>break<hr/>done") == "line break done"
+
+
+def test_carriage_return_collapsed():
+    assert preprocess("hello\r\nworld") == "hello world"
