@@ -86,10 +86,28 @@ def test_batch_analyze_rejects_empty_list(stub_client):
     assert response.status_code == 422
 
 
+def test_batch_analyze_single_item(stub_client):
+    response = stub_client.post("/api/v1/analyze/batch", json={"texts": ["great"]})
+    assert response.status_code == 200
+    assert response.json()["count"] == 1
+
+
+def test_batch_analyze_at_max_size(stub_client):
+    response = stub_client.post("/api/v1/analyze/batch", json={"texts": ["hello"] * 32})
+    assert response.status_code == 200
+    assert response.json()["count"] == 32
+
+
 def test_batch_analyze_rejects_oversized_batch(stub_client):
     response = stub_client.post("/api/v1/analyze/batch", json={"texts": ["hello"] * 33})
     assert response.status_code == 400
     assert response.json()["detail"]["error"] == "batch_too_large"
+
+
+def test_batch_processing_ms_is_positive(stub_client):
+    response = stub_client.post("/api/v1/analyze/batch", json={"texts": ["good", "bad"]})
+    assert response.status_code == 200
+    assert response.json()["processing_ms"] >= 0.0
 
 
 def test_batch_each_item_has_shape(stub_client):
