@@ -143,6 +143,15 @@ def test_response_includes_request_id(stub_client):
     assert "x-request-id" in response.headers
 
 
+def test_generated_request_id_is_valid_uuid(stub_client):
+    import uuid
+
+    response = stub_client.post("/api/v1/analyze", json={"text": "Hello"})
+    request_id = response.headers["x-request-id"]
+    parsed = uuid.UUID(request_id)
+    assert str(parsed) == request_id
+
+
 def test_response_echoes_provided_request_id(stub_client):
     response = stub_client.post(
         "/api/v1/analyze",
