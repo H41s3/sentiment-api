@@ -124,7 +124,8 @@ def test_auto_loads_on_first_batch_analyze():
 
 def test_stub_score_capped_at_099():
     service = _make_service()
-    result = service.analyze("love great good excellent awesome happy fantastic wonderful best perfect")
+    many_positive = "love great good excellent awesome happy fantastic wonderful best perfect"
+    result = service.analyze(many_positive)
     assert result.label == "POSITIVE"
     assert result.score <= 0.99
 
