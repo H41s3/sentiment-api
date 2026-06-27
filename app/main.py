@@ -58,6 +58,16 @@ app = FastAPI(
     version="0.1.0",
     description="REST API for text sentiment analysis using HuggingFace Transformers",
     lifespan=lifespan,
+    openapi_tags=[
+        {
+            "name": "sentiment",
+            "description": "Classify text sentiment — single or batch.",
+        },
+        {
+            "name": "meta",
+            "description": "Health probes, model info, and operational endpoints.",
+        },
+    ],
 )
 
 Instrumentator().instrument(app).expose(app, endpoint="/metrics", include_in_schema=False)
