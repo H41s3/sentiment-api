@@ -36,6 +36,11 @@ def test_security_headers_present_on_api_routes(stub_client):
     assert response.headers["x-frame-options"] == "DENY"
 
 
+def test_content_security_policy_header():
+    response = client.get("/health/live")
+    assert response.headers["content-security-policy"] == "default-src 'none'; frame-ancestors 'none'"
+
+
 def test_strict_transport_security_header():
     response = client.get("/health/live")
     assert response.headers["strict-transport-security"] == "max-age=63072000; includeSubDomains"
