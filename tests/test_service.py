@@ -141,3 +141,32 @@ def test_analyze_single_word():
     result = service.analyze("indifferent")
     assert result.label == "NEUTRAL"
     assert result.score == 0.5
+
+
+def test_analyze_batch_identical_texts():
+    service = _make_service()
+    results = service.analyze_batch(["love", "love", "love"])
+    assert len(results) == 3
+    for r in results:
+        assert r.label == "POSITIVE"
+
+
+def test_analyze_batch_empty_after_preprocessing():
+    service = _make_service()
+    results = service.analyze_batch(["ok"])
+    assert len(results) == 1
+    assert results[0].label == "NEUTRAL"
+
+
+def test_inference_count_accumulates_across_calls():
+    service = _make_service()
+    service.analyze("great")
+    service.analyze_batch(["bad", "good"])
+    assert service.inference_count == 3
+
+
+def test_avg_inference_ms_updates_after_batch():
+    service = _make_service()
+    service.analyze_batch(["great", "terrible"])
+    assert service.avg_inference_ms >= 0.0
+    assert service.inference_count == 2
