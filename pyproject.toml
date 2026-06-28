@@ -1,7 +1,13 @@
 [project]
 name = "sentiment-api"
 version = "0.1.0"
+description = "REST API for text sentiment analysis using HuggingFace Transformers"
 requires-python = ">=3.11"
+license = "MIT"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Framework :: FastAPI",
+]
 dependencies = [
     "fastapi==0.111.0",
     "uvicorn[standard]==0.29.0",
