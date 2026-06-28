@@ -50,15 +50,20 @@ class Settings(BaseSettings):
     def validate_settings(self) -> "Settings":
         """Reject obviously wrong values before the app starts accepting traffic."""
         if not (64 <= self.max_length <= 2048):
-            raise ValueError("MAX_LENGTH must be between 64 and 2048")
+            raise ValueError(f"MAX_LENGTH must be between 64 and 2048 (got {self.max_length})")
         if self.web_concurrency < 1:
-            raise ValueError("WEB_CONCURRENCY must be at least 1")
+            raise ValueError(
+                f"WEB_CONCURRENCY must be at least 1 (got {self.web_concurrency})"
+            )
         if not (1 <= self.max_batch_size <= 128):
-            raise ValueError("MAX_BATCH_SIZE must be between 1 and 128")
+            raise ValueError(
+                f"MAX_BATCH_SIZE must be between 1 and 128 (got {self.max_batch_size})"
+            )
         import logging
 
         if self.log_level.upper() not in logging._nameToLevel:
-            raise ValueError(f"LOG_LEVEL must be one of {list(logging._nameToLevel)}")
+            valid = sorted(logging._nameToLevel)
+            raise ValueError(f"LOG_LEVEL must be one of {valid} (got '{self.log_level}')")
         return self
 
 
