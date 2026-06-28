@@ -71,3 +71,48 @@ def test_redis_url_accepts_valid_redis_string():
     """
     s = Settings(redis_url="redis://redis:6379/0")
     assert s.redis_url == "redis://redis:6379/0"
+
+
+# ---------------------------------------------------------------------------
+# Boundary-valid edge cases — values at the exact limits of valid ranges
+# ---------------------------------------------------------------------------
+
+
+def test_accepts_min_valid_max_length():
+    s = Settings(max_length=64)
+    assert s.max_length == 64
+
+
+def test_accepts_max_valid_max_length():
+    s = Settings(max_length=2048)
+    assert s.max_length == 2048
+
+
+def test_accepts_min_valid_batch_size():
+    s = Settings(max_batch_size=1)
+    assert s.max_batch_size == 1
+
+
+def test_accepts_max_valid_batch_size():
+    s = Settings(max_batch_size=128)
+    assert s.max_batch_size == 128
+
+
+def test_accepts_single_worker():
+    s = Settings(web_concurrency=1)
+    assert s.web_concurrency == 1
+
+
+def test_accepts_case_insensitive_log_level():
+    s = Settings(log_level="debug")
+    assert s.log_level == "debug"
+
+
+def test_rejects_max_length_just_below_minimum():
+    with pytest.raises(ValueError, match="MAX_LENGTH"):
+        Settings(max_length=63)
+
+
+def test_rejects_max_length_just_above_maximum():
+    with pytest.raises(ValueError, match="MAX_LENGTH"):
+        Settings(max_length=2049)
