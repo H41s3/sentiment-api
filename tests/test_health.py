@@ -117,3 +117,25 @@ def test_readiness_503_has_no_loaded_at(unloaded_client):
     response = unloaded_client.get("/health/ready")
     assert response.status_code == 503
     assert "loaded_at" not in response.json()
+
+
+def test_readiness_loaded_at_is_iso8601():
+    from datetime import datetime, timezone
+
+    service = SentimentService(model_name="test-stub", max_length=512)
+    service._pipeline = "stub"
+    service._loaded_at = datetime(2026, 1, 15, 12, 0, 0, tzinfo=timezone.utc)
+    app.dependency_overrides[get_sentiment_service] = lambda: service
+    try:
+        c = TestClient(app)
+        body = c.get("/health/ready").json()
+        datetime.fromisoformat(body["loaded_at"])
+    finally:
+        app.dependency_overrides.clear()
+
+
+def test_top_level_health_includes_version():
+    response = client.get("/health")
+    body = response.json()
+    assert "version" in body
+    assert isinstance(body["version"], str)
