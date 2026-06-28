@@ -39,10 +39,12 @@ class SentimentResult(BaseModel):
 
 
 class SentimentResponse(BaseModel):
-    text: str
+    text: str = Field(..., examples=["I love this!"])
     sentiment: SentimentResult
-    model: str
-    processing_ms: float = Field(..., description="Time spent on inference in milliseconds")
+    model: str = Field(..., examples=["distilbert-base-uncased-finetuned-sst-2-english"])
+    processing_ms: float = Field(
+        ..., description="Time spent on inference in milliseconds", examples=[12.34]
+    )
 
 
 class BatchSentimentRequest(BaseModel):
@@ -60,9 +62,11 @@ class BatchSentimentItem(BaseModel):
 
 class BatchSentimentResponse(BaseModel):
     results: list[BatchSentimentItem]
-    model: str
-    count: int
-    processing_ms: float = Field(..., description="Time spent on batch inference in milliseconds")
+    model: str = Field(..., examples=["distilbert-base-uncased-finetuned-sst-2-english"])
+    count: int = Field(..., examples=[3])
+    processing_ms: float = Field(
+        ..., description="Time spent on batch inference in milliseconds", examples=[45.67]
+    )
 
 
 class ModelInfoResponse(BaseModel):
