@@ -31,7 +31,12 @@ jobs:
         with:
           python-version: "3.12"
       - run: uv sync --group dev
-      - run: uv run pytest tests/ --cov=app --cov-fail-under=80
+      - run: uv run pytest tests/ --cov=app --cov-fail-under=80 --cov-report=term-missing --cov-report=html:htmlcov
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: htmlcov/
 
   docker:
     runs-on: ubuntu-latest
