@@ -179,6 +179,25 @@ def test_response_echoes_provided_request_id(stub_client):
     assert response.headers["x-request-id"] == "my-trace-id-123"
 
 
+# --- response text echo ---
+
+
+def test_analyze_response_echoes_input_text(stub_client):
+    input_text = "I love this product"
+    response = stub_client.post("/api/v1/analyze", json={"text": input_text})
+    assert response.status_code == 200
+    assert response.json()["text"] == input_text
+
+
+def test_batch_results_align_with_input_texts(stub_client):
+    texts = ["I love this", "terrible product", "hello world"]
+    response = stub_client.post("/api/v1/analyze/batch", json={"texts": texts})
+    assert response.status_code == 200
+    results = response.json()["results"]
+    for i, item in enumerate(results):
+        assert item["text"] == texts[i]
+
+
 # --- preprocessing ---
 
 
