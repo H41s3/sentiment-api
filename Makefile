@@ -1,4 +1,4 @@
-.PHONY: help run dev test lint test-cov lint-fix format format-check ci docker-build docker-up observability
+.PHONY: help run dev test lint test-cov lint-fix format format-check ci clean docker-build docker-up observability
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | \
@@ -27,6 +27,10 @@ format-check: ## Check formatting without changes
 
 ci: lint format-check test ## Run full CI pipeline locally
 	@echo "All checks passed."
+
+clean: ## Remove build artifacts and caches
+	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+	rm -rf .pytest_cache .ruff_cache htmlcov .coverage dist build *.egg-info
 
 docker-build: ## Build Docker image
 	docker build -t sentiment-api .
