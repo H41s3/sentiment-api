@@ -52,9 +52,7 @@ class Settings(BaseSettings):
         if not (64 <= self.max_length <= 2048):
             raise ValueError(f"MAX_LENGTH must be between 64 and 2048 (got {self.max_length})")
         if self.web_concurrency < 1:
-            raise ValueError(
-                f"WEB_CONCURRENCY must be at least 1 (got {self.web_concurrency})"
-            )
+            raise ValueError(f"WEB_CONCURRENCY must be at least 1 (got {self.web_concurrency})")
         if not (1 <= self.max_batch_size <= 128):
             raise ValueError(
                 f"MAX_BATCH_SIZE must be between 1 and 128 (got {self.max_batch_size})"
