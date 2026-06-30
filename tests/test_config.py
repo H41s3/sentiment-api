@@ -116,3 +116,33 @@ def test_rejects_max_length_just_below_minimum():
 def test_rejects_max_length_just_above_maximum():
     with pytest.raises(ValueError, match="MAX_LENGTH"):
         Settings(max_length=2049)
+
+
+# ---------------------------------------------------------------------------
+# PORT — valid TCP port range
+# ---------------------------------------------------------------------------
+
+
+def test_accepts_default_port():
+    s = Settings()
+    assert s.port == 8000
+
+
+def test_accepts_port_1():
+    s = Settings(port=1)
+    assert s.port == 1
+
+
+def test_accepts_port_65535():
+    s = Settings(port=65535)
+    assert s.port == 65535
+
+
+def test_rejects_port_zero():
+    with pytest.raises(ValueError, match="PORT"):
+        Settings(port=0)
+
+
+def test_rejects_port_above_65535():
+    with pytest.raises(ValueError, match="PORT"):
+        Settings(port=70000)

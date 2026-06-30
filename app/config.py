@@ -59,6 +59,8 @@ class Settings(BaseSettings):
             raise ValueError(
                 f"MAX_BATCH_SIZE must be between 1 and 128 (got {self.max_batch_size})"
             )
+        if not (1 <= self.port <= 65535):
+            raise ValueError(f"PORT must be between 1 and 65535 (got {self.port})")
         import logging
 
         if self.log_level.upper() not in logging._nameToLevel:
