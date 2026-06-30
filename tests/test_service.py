@@ -170,3 +170,25 @@ def test_avg_inference_ms_updates_after_batch():
     service.analyze_batch(["great", "terrible"])
     assert service.avg_inference_ms >= 0.0
     assert service.inference_count == 2
+
+
+def test_loaded_at_is_utc():
+    service = SentimentService(model_name="test-stub", max_length=512)
+    with patch.dict("sys.modules", {"transformers": None}):
+        service.load()
+    assert service.loaded_at.tzinfo is not None
+    assert service.loaded_at.tzinfo == timezone.utc
+
+
+def test_unload_resets_inference_stats():
+    service = _make_service()
+    service.analyze("great product")
+    assert service.inference_count > 0
+    service.unload()
+    assert service.is_loaded is False
+
+
+def test_model_name_preserved_after_load():
+    service = SentimentService(model_name="custom-model", max_length=256)
+    assert service.model_name == "custom-model"
+    assert service.max_length == 256
