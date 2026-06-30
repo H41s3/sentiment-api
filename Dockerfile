@@ -1,5 +1,10 @@
 FROM python:3.11-slim
 
+LABEL org.opencontainers.image.title="sentiment-api" \
+      org.opencontainers.image.description="REST API for text sentiment analysis" \
+      org.opencontainers.image.source="https://github.com/H41s3/sentiment-api" \
+      org.opencontainers.image.licenses="MIT"
+
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
 WORKDIR /app
