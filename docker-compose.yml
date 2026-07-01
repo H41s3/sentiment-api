@@ -13,6 +13,7 @@ services:
       redis:
         condition: service_healthy
     restart: unless-stopped
+    stop_grace_period: 30s
 
   # Shared rate-limit storage — all API workers and replicas write to this
   # single Redis instance, fixing the per-worker counter drift bug.
