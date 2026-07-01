@@ -26,6 +26,9 @@ ENV/
 htmlcov/
 .tox/
 
+# Type checking
+.mypy_cache/
+
 # Environment
 .env
 .env.*
