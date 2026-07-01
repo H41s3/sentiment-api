@@ -10,7 +10,8 @@ services:
     environment:
       - REDIS_URL=redis://redis:6379/0
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
     restart: unless-stopped
 
   # Shared rate-limit storage — all API workers and replicas write to this
@@ -18,3 +19,8 @@ services:
   redis:
     image: redis:7-alpine
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
