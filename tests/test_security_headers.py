@@ -47,6 +47,11 @@ def test_strict_transport_security_header():
     assert response.headers["strict-transport-security"] == "max-age=63072000; includeSubDomains"
 
 
+def test_x_dns_prefetch_control_header():
+    response = client.get("/health/live")
+    assert response.headers["x-dns-prefetch-control"] == "off"
+
+
 def test_security_headers_present_on_error_responses():
     response = client.post("/api/v1/analyze", json={"text": ""})
     assert response.status_code == 422

@@ -15,6 +15,7 @@ _SECURITY_HEADERS = {
     "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
     "Cache-Control": "no-store",
     "Strict-Transport-Security": "max-age=63072000; includeSubDomains",
+    "X-DNS-Prefetch-Control": "off",
 }
 
 
