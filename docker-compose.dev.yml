@@ -5,3 +5,5 @@ services:
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     environment:
       - PYTHONDONTWRITEBYTECODE=1
+      - LOG_LEVEL=DEBUG
+      - WEB_CONCURRENCY=1
