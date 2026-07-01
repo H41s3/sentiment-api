@@ -55,3 +55,23 @@ def test_cors_allows_api_key_header():
         },
     )
     assert response.status_code == 200
+
+
+def test_cors_preflight_exposes_x_request_id():
+    response = client.get(
+        "/health/live",
+        headers={"Origin": "http://localhost:3000"},
+    )
+    assert "x-request-id" in response.headers
+
+
+def test_cors_rejects_disallowed_method():
+    response = client.options(
+        "/api/v1/analyze",
+        headers={
+            "Origin": "http://localhost:3000",
+            "Access-Control-Request-Method": "DELETE",
+        },
+    )
+    allowed = response.headers.get("access-control-allow-methods", "")
+    assert "DELETE" not in allowed
