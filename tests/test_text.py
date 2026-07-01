@@ -86,3 +86,21 @@ def test_self_closing_tags():
 
 def test_carriage_return_collapsed():
     assert preprocess("hello\r\nworld") == "hello world"
+
+
+def test_preserves_emoji_characters():
+    assert preprocess("I love this product! 😍") == "I love this product! 😍"
+
+
+def test_preserves_accented_characters():
+    assert preprocess("Très bien, merci!") == "Très bien, merci!"
+
+
+def test_preserves_cjk_characters():
+    assert preprocess("この製品は素晴らしい") == "この製品は素晴らしい"
+
+
+def test_html_with_url_combined():
+    result = preprocess("<a href='https://example.com'>Click here</a>")
+    assert "href" not in result
+    assert "Click here" in result
