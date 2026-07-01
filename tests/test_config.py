@@ -146,3 +146,33 @@ def test_rejects_port_zero():
 def test_rejects_port_above_65535():
     with pytest.raises(ValueError, match="PORT"):
         Settings(port=70000)
+
+
+# ---------------------------------------------------------------------------
+# Validation error messages include the actual invalid value
+# ---------------------------------------------------------------------------
+
+
+def test_max_length_error_includes_actual_value():
+    with pytest.raises(ValueError, match="10"):
+        Settings(max_length=10)
+
+
+def test_batch_size_error_includes_actual_value():
+    with pytest.raises(ValueError, match="200"):
+        Settings(max_batch_size=200)
+
+
+def test_workers_error_includes_actual_value():
+    with pytest.raises(ValueError, match="0"):
+        Settings(web_concurrency=0)
+
+
+def test_port_error_includes_actual_value():
+    with pytest.raises(ValueError, match="70000"):
+        Settings(port=70000)
+
+
+def test_log_level_error_includes_actual_value():
+    with pytest.raises(ValueError, match="VERBOSE"):
+        Settings(log_level="VERBOSE")
