@@ -50,14 +50,17 @@ class SentimentResponse(BaseModel):
 class BatchSentimentRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    texts: list[CleanText] = Field(..., min_length=1)
-    # Upper bound is enforced in the route handler against settings.max_batch_size
-    # so operators can tune it via MAX_BATCH_SIZE without a code change or redeploy.
+    texts: list[CleanText] = Field(
+        ...,
+        min_length=1,
+        description="List of texts to classify. Upper bound is set by MAX_BATCH_SIZE.",
+        examples=[["I love this!", "Terrible experience."]],
+    )
 
 
 class BatchSentimentItem(BaseModel):
-    text: str
-    sentiment: SentimentResult
+    text: str = Field(..., description="Original input text")
+    sentiment: SentimentResult = Field(..., description="Classification result for this text")
 
 
 class BatchSentimentResponse(BaseModel):
