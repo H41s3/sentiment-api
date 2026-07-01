@@ -176,3 +176,33 @@ def test_port_error_includes_actual_value():
 def test_log_level_error_includes_actual_value():
     with pytest.raises(ValueError, match="VERBOSE"):
         Settings(log_level="VERBOSE")
+
+
+# ---------------------------------------------------------------------------
+# CORS_ORIGINS — format validation
+# ---------------------------------------------------------------------------
+
+
+def test_cors_accepts_wildcard():
+    s = Settings(cors_origins=["*"])
+    assert s.cors_origins == ["*"]
+
+
+def test_cors_accepts_https_origin():
+    s = Settings(cors_origins=["https://example.com"])
+    assert s.cors_origins == ["https://example.com"]
+
+
+def test_cors_accepts_http_origin():
+    s = Settings(cors_origins=["http://localhost:3000"])
+    assert s.cors_origins == ["http://localhost:3000"]
+
+
+def test_cors_rejects_bare_domain():
+    with pytest.raises(ValueError, match="CORS_ORIGINS"):
+        Settings(cors_origins=["example.com"])
+
+
+def test_cors_accepts_mixed_valid_origins():
+    s = Settings(cors_origins=["https://a.com", "http://b.com", "*"])
+    assert len(s.cors_origins) == 3

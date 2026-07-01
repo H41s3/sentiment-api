@@ -59,6 +59,12 @@ class Settings(BaseSettings):
             )
         if not (1 <= self.port <= 65535):
             raise ValueError(f"PORT must be between 1 and 65535 (got {self.port})")
+        for origin in self.cors_origins:
+            if origin != "*" and not origin.startswith(("http://", "https://")):
+                raise ValueError(
+                    f"CORS_ORIGINS entries must be '*' or start with http:// or https:// "
+                    f"(got '{origin}')"
+                )
         import logging
 
         if self.log_level.upper() not in logging._nameToLevel:
