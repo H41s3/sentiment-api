@@ -120,6 +120,12 @@ def test_batch_each_item_has_shape(stub_client):
         assert "score" in item["sentiment"]
 
 
+def test_batch_response_model_matches_service(stub_client):
+    response = stub_client.post("/api/v1/analyze/batch", json={"texts": ["good"]})
+    assert response.status_code == 200
+    assert response.json()["model"] == "test-stub"
+
+
 # --- API key auth ---
 
 
