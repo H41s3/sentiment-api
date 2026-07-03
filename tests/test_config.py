@@ -148,6 +148,11 @@ def test_rejects_port_above_65535():
         Settings(port=70000)
 
 
+def test_rejects_negative_port():
+    with pytest.raises(ValueError, match="PORT"):
+        Settings(port=-1)
+
+
 # ---------------------------------------------------------------------------
 # Validation error messages include the actual invalid value
 # ---------------------------------------------------------------------------
