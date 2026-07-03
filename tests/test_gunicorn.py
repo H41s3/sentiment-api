@@ -44,3 +44,13 @@ def test_preload_app_enabled():
 def test_keepalive_is_set():
     mod = _load_config()
     assert mod.keepalive == 5
+
+
+def test_max_requests_enables_worker_recycling():
+    mod = _load_config()
+    assert mod.max_requests == 1000
+
+
+def test_max_requests_jitter_is_set():
+    mod = _load_config()
+    assert mod.max_requests_jitter == 50
