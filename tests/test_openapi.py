@@ -62,3 +62,18 @@ def test_redoc_available():
     response = client.get("/redoc")
     assert response.status_code == 200
     assert "text/html" in response.headers["content-type"]
+
+
+def test_openapi_sentiment_request_text_has_description():
+    schema = client.get("/openapi.json").json()
+    schemas = schema["components"]["schemas"]
+    text_props = schemas["SentimentRequest"]["properties"]["text"]
+    assert "description" in text_props
+
+
+def test_openapi_model_info_fields_have_descriptions():
+    schema = client.get("/openapi.json").json()
+    schemas = schema["components"]["schemas"]
+    info_props = schemas["ModelInfoResponse"]["properties"]
+    for field in ("model", "max_length", "max_batch_size", "version"):
+        assert "description" in info_props[field], f"{field} missing description"
