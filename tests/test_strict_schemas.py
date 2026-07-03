@@ -39,3 +39,13 @@ def test_analyze_rejects_missing_text_field():
 def test_batch_rejects_non_list_texts():
     response = client.post("/api/v1/analyze/batch", json={"texts": "single string"})
     assert response.status_code == 422
+
+
+def test_analyze_rejects_non_string_text():
+    response = client.post("/api/v1/analyze", json={"text": 12345})
+    assert response.status_code == 422
+
+
+def test_batch_rejects_empty_string_item():
+    response = client.post("/api/v1/analyze/batch", json={"texts": ["hello", ""]})
+    assert response.status_code == 422
