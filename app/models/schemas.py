@@ -39,9 +39,13 @@ class SentimentResult(BaseModel):
 
 
 class SentimentResponse(BaseModel):
-    text: str = Field(..., examples=["I love this!"])
+    text: str = Field(..., description="Original input text", examples=["I love this!"])
     sentiment: SentimentResult
-    model: str = Field(..., examples=["distilbert-base-uncased-finetuned-sst-2-english"])
+    model: str = Field(
+        ...,
+        description="HuggingFace model used for classification",
+        examples=["distilbert-base-uncased-finetuned-sst-2-english"],
+    )
     processing_ms: float = Field(
         ..., description="Time spent on inference in milliseconds", examples=[12.34]
     )
@@ -73,10 +77,10 @@ class BatchSentimentResponse(BaseModel):
 
 
 class ModelInfoResponse(BaseModel):
-    model: str
-    max_length: int
-    max_batch_size: int
-    version: str
+    model: str = Field(..., description="HuggingFace model identifier")
+    max_length: int = Field(..., description="Maximum token length accepted by the tokenizer")
+    max_batch_size: int = Field(..., description="Maximum texts per batch request")
+    version: str = Field(..., description="API package version")
     inference_count: int = Field(
         ..., description="Total texts classified by this worker since startup"
     )
