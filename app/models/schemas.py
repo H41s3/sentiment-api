@@ -70,9 +70,15 @@ class BatchSentimentItem(BaseModel):
 
 
 class BatchSentimentResponse(BaseModel):
-    results: list[BatchSentimentItem]
-    model: str = Field(..., examples=["distilbert-base-uncased-finetuned-sst-2-english"])
-    count: int = Field(..., examples=[3])
+    results: list[BatchSentimentItem] = Field(
+        ..., description="Classification results in input order"
+    )
+    model: str = Field(
+        ...,
+        description="HuggingFace model used for classification",
+        examples=["distilbert-base-uncased-finetuned-sst-2-english"],
+    )
+    count: int = Field(..., description="Number of texts in the batch", examples=[3])
     processing_ms: float = Field(
         ..., description="Time spent on batch inference in milliseconds", examples=[45.67]
     )
