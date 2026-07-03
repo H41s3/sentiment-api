@@ -67,8 +67,8 @@ class Settings(BaseSettings):
                 )
         import logging
 
-        if self.log_level.upper() not in logging._nameToLevel:
-            valid = sorted(logging._nameToLevel)
+        if self.log_level.upper() not in logging.getLevelNamesMapping():
+            valid = sorted(logging.getLevelNamesMapping())
             raise ValueError(f"LOG_LEVEL must be one of {valid} (got '{self.log_level}')")
         return self
 
