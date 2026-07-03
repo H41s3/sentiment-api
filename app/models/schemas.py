@@ -21,7 +21,9 @@ class ErrorResponse(BaseModel):
 class SentimentRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    text: CleanText = Field(..., examples=["I love this!"])
+    text: CleanText = Field(
+        ..., description="Text to classify for sentiment", examples=["I love this!"]
+    )
 
     @field_validator("text")
     @classmethod
