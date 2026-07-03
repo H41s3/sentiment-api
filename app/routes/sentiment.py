@@ -140,7 +140,9 @@ async def analyze_batch(
     for _r in sentiments:
         INFERENCE_REQUESTS_TOTAL.labels(endpoint="batch", label=_r.label).inc()
     INFERENCE_DURATION_SECONDS.labels(endpoint="batch").observe(processing_ms / 1000)
-    items = [BatchSentimentItem(text=t, sentiment=s) for t, s in zip(body.texts, sentiments)]
+    items = [
+        BatchSentimentItem(text=t, sentiment=s) for t, s in zip(body.texts, sentiments, strict=True)
+    ]
     return BatchSentimentResponse(
         results=items,
         model=service.model_name,

@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import patch
 
 from app.services.sentiment_service import SentimentService
@@ -7,7 +7,7 @@ from app.services.sentiment_service import SentimentService
 def _make_service() -> SentimentService:
     service = SentimentService(model_name="test-stub", max_length=512)
     service._pipeline = "stub"
-    service._loaded_at = datetime.now(tz=timezone.utc)
+    service._loaded_at = datetime.now(tz=UTC)
     return service
 
 
@@ -177,7 +177,7 @@ def test_loaded_at_is_utc():
     with patch.dict("sys.modules", {"transformers": None}):
         service.load()
     assert service.loaded_at.tzinfo is not None
-    assert service.loaded_at.tzinfo == timezone.utc
+    assert service.loaded_at.tzinfo == UTC
 
 
 def test_unload_resets_inference_stats():

@@ -1,5 +1,5 @@
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from app.models.schemas import SentimentResult
 from app.utils.text import preprocess
@@ -72,7 +72,7 @@ class SentimentService:
             # transformers not installed — fall back to the keyword stub so
             # lightweight deployments and the test suite work without ML deps.
             self._pipeline = "stub"
-        self._loaded_at = datetime.now(tz=timezone.utc)
+        self._loaded_at = datetime.now(tz=UTC)
 
     def warm_up(self) -> None:
         """Run one dummy inference to trigger PyTorch JIT kernel compilation.

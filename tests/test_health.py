@@ -96,11 +96,11 @@ def test_analyze_passes_with_correct_key(auth_client, monkeypatch):
 
 
 def test_readiness_includes_loaded_at_when_model_ready():
-    from datetime import datetime, timezone
+    from datetime import UTC, datetime
 
     service = SentimentService(model_name="test-stub", max_length=512)
     service._pipeline = "stub"
-    service._loaded_at = datetime.now(tz=timezone.utc)
+    service._loaded_at = datetime.now(tz=UTC)
     app.dependency_overrides[get_sentiment_service] = lambda: service
     try:
         c = TestClient(app)
@@ -120,11 +120,11 @@ def test_readiness_503_has_no_loaded_at(unloaded_client):
 
 
 def test_readiness_loaded_at_is_iso8601():
-    from datetime import datetime, timezone
+    from datetime import UTC, datetime
 
     service = SentimentService(model_name="test-stub", max_length=512)
     service._pipeline = "stub"
-    service._loaded_at = datetime(2026, 1, 15, 12, 0, 0, tzinfo=timezone.utc)
+    service._loaded_at = datetime(2026, 1, 15, 12, 0, 0, tzinfo=UTC)
     app.dependency_overrides[get_sentiment_service] = lambda: service
     try:
         c = TestClient(app)
