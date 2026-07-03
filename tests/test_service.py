@@ -192,3 +192,10 @@ def test_model_name_preserved_after_load():
     service = SentimentService(model_name="custom-model", max_length=256)
     assert service.model_name == "custom-model"
     assert service.max_length == 256
+
+
+def test_warm_up_safe_before_load():
+    service = SentimentService(model_name="test-stub", max_length=512)
+    assert service._pipeline is None
+    service.warm_up()
+    assert service._pipeline is None
