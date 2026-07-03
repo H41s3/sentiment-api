@@ -54,3 +54,14 @@ def test_max_requests_enables_worker_recycling():
 def test_max_requests_jitter_is_set():
     mod = _load_config()
     assert mod.max_requests_jitter == 50
+
+
+def test_loglevel_defaults_to_info():
+    mod = _load_config()
+    assert mod.loglevel == "info"
+
+
+def test_loglevel_reads_log_level_env(monkeypatch):
+    monkeypatch.setenv("LOG_LEVEL", "DEBUG")
+    mod = _load_config()
+    assert mod.loglevel == "debug"

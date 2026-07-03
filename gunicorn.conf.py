@@ -10,3 +10,4 @@ max_requests_jitter = 50
 preload_app = True
 accesslog = "-"
 errorlog = "-"
+loglevel = os.getenv("LOG_LEVEL", "info").lower()
