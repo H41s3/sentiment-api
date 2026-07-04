@@ -58,6 +58,12 @@ def test_readiness_503_when_model_not_loaded(unloaded_client):
     assert "reason" in body
 
 
+def test_readiness_503_content_type_is_json(unloaded_client):
+    response = unloaded_client.get("/health/ready")
+    assert response.status_code == 503
+    assert "application/json" in response.headers["content-type"]
+
+
 # --- auth + analyze interaction ---
 
 
