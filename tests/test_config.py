@@ -10,6 +10,16 @@ def test_default_settings_are_valid():
     assert s.max_batch_size == 32
 
 
+def test_rejects_empty_model_name():
+    with pytest.raises(ValueError, match="MODEL_NAME"):
+        Settings(model_name="")
+
+
+def test_rejects_whitespace_only_model_name():
+    with pytest.raises(ValueError, match="MODEL_NAME"):
+        Settings(model_name="   ")
+
+
 def test_rejects_max_length_too_low():
     with pytest.raises(ValueError, match="MAX_LENGTH"):
         Settings(max_length=10)
