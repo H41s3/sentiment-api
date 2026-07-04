@@ -180,12 +180,13 @@ def test_loaded_at_is_utc():
     assert service.loaded_at.tzinfo == UTC
 
 
-def test_unload_resets_inference_stats():
+def test_unload_preserves_inference_stats():
     service = _make_service()
     service.analyze("great product")
     assert service.inference_count > 0
     service.unload()
     assert service.is_loaded is False
+    assert service.inference_count == 1
 
 
 def test_model_name_preserved_after_load():
