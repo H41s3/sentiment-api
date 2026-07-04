@@ -49,6 +49,8 @@ class Settings(BaseSettings):
     @model_validator(mode="after")
     def validate_settings(self) -> "Settings":
         """Reject obviously wrong values before the app starts accepting traffic."""
+        if not self.model_name.strip():
+            raise ValueError("MODEL_NAME must not be empty")
         if not (64 <= self.max_length <= 2048):
             raise ValueError(f"MAX_LENGTH must be between 64 and 2048 (got {self.max_length})")
         if self.web_concurrency < 1:
