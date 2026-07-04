@@ -2,6 +2,18 @@ from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+__all__ = [
+    "CleanText",
+    "ErrorResponse",
+    "SentimentRequest",
+    "SentimentResult",
+    "SentimentResponse",
+    "BatchSentimentRequest",
+    "BatchSentimentItem",
+    "BatchSentimentResponse",
+    "ModelInfoResponse",
+]
+
 # Shared type alias applied to every user-supplied text field.
 # Pydantic enforces these bounds at parse time, before any route handler runs.
 CleanText = Annotated[str, Field(min_length=1, max_length=5000)]
