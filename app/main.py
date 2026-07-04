@@ -102,7 +102,7 @@ app.add_middleware(
 app.include_router(sentiment.router, prefix="/api/v1")
 
 
-@app.get("/health", tags=["meta"])
+@app.get("/health", tags=["meta"], summary="Legacy health check")
 def health_check():
     """Top-level health check kept for backwards compatibility."""
     return {"status": "ok", "model": settings.model_name, "version": app.version}
