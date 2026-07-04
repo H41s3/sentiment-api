@@ -77,3 +77,11 @@ def test_openapi_model_info_fields_have_descriptions():
     info_props = schemas["ModelInfoResponse"]["properties"]
     for field in ("model", "max_length", "max_batch_size", "version"):
         assert "description" in info_props[field], f"{field} missing description"
+
+
+def test_openapi_health_endpoints_have_summaries():
+    schema = client.get("/openapi.json").json()
+    paths = schema["paths"]
+    assert "summary" in paths["/health/live"]["get"]
+    assert "summary" in paths["/health/ready"]["get"]
+    assert "summary" in paths["/health"]["get"]
