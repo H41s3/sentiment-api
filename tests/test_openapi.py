@@ -85,3 +85,8 @@ def test_openapi_health_endpoints_have_summaries():
     assert "summary" in paths["/health/live"]["get"]
     assert "summary" in paths["/health/ready"]["get"]
     assert "summary" in paths["/health"]["get"]
+
+
+def test_openapi_metrics_endpoint_excluded_from_schema():
+    schema = client.get("/openapi.json").json()
+    assert "/metrics" not in schema["paths"]
