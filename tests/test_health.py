@@ -145,3 +145,10 @@ def test_top_level_health_includes_version():
     body = response.json()
     assert "version" in body
     assert isinstance(body["version"], str)
+
+
+def test_top_level_health_model_matches_config():
+    from app.config import settings
+
+    response = client.get("/health")
+    assert response.json()["model"] == settings.model_name
