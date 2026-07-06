@@ -5,6 +5,8 @@ import uuid
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 
+__all__ = ["LoggingMiddleware", "SecurityHeadersMiddleware"]
+
 logger = logging.getLogger("sentiment_api")
 
 _SECURITY_HEADERS = {
