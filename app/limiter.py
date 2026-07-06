@@ -4,6 +4,8 @@ from starlette.requests import Request
 
 from app.config import settings
 
+__all__ = ["limiter"]
+
 
 def _rate_limit_key(request: Request) -> str:
     """Derive a rate-limit bucket key from the inbound request.
