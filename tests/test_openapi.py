@@ -90,3 +90,9 @@ def test_openapi_health_endpoints_have_summaries():
 def test_openapi_metrics_endpoint_excluded_from_schema():
     schema = client.get("/openapi.json").json()
     assert "/metrics" not in schema["paths"]
+
+
+def test_openapi_batch_endpoint_documents_401_response():
+    schema = client.get("/openapi.json").json()
+    post = schema["paths"]["/api/v1/analyze/batch"]["post"]
+    assert "401" in post["responses"]
