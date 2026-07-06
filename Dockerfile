@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM python:3.12-slim
 
 LABEL org.opencontainers.image.title="sentiment-api" \
       org.opencontainers.image.description="REST API for text sentiment analysis" \
