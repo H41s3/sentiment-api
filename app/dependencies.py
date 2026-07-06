@@ -3,6 +3,8 @@ from functools import lru_cache
 from app.config import settings
 from app.services.sentiment_service import SentimentService
 
+__all__ = ["get_sentiment_service"]
+
 
 @lru_cache(maxsize=1)
 def get_sentiment_service() -> SentimentService:
