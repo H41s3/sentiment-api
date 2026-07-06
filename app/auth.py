@@ -2,6 +2,8 @@ from fastapi import Header, HTTPException, status
 
 from app.config import settings
 
+__all__ = ["verify_api_key"]
+
 
 async def verify_api_key(x_api_key: str | None = Header(default=None)) -> None:
     """FastAPI dependency that enforces API key authentication when configured.
