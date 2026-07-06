@@ -96,3 +96,17 @@ def test_openapi_batch_endpoint_documents_401_response():
     schema = client.get("/openapi.json").json()
     post = schema["paths"]["/api/v1/analyze/batch"]["post"]
     assert "401" in post["responses"]
+
+
+def test_openapi_error_response_fields_have_descriptions():
+    schema = client.get("/openapi.json").json()
+    props = schema["components"]["schemas"]["ErrorResponse"]["properties"]
+    assert "description" in props["error"]
+    assert "description" in props["message"]
+
+
+def test_openapi_sentiment_result_fields_have_descriptions():
+    schema = client.get("/openapi.json").json()
+    props = schema["components"]["schemas"]["SentimentResult"]["properties"]
+    assert "description" in props["label"]
+    assert "description" in props["score"]
