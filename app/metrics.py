@@ -1,5 +1,12 @@
 from prometheus_client import Counter, Gauge, Histogram
 
+__all__ = [
+    "BATCH_SIZE",
+    "INFERENCE_DURATION_SECONDS",
+    "INFERENCE_REQUESTS_TOTAL",
+    "MODEL_LOADED",
+]
+
 INFERENCE_REQUESTS_TOTAL = Counter(
     "sentiment_inference_requests_total",
     "Total number of texts classified",
