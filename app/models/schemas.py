@@ -26,8 +26,12 @@ class ErrorResponse(BaseModel):
     structure that clients will receive on failure — not just a generic 422.
     """
 
-    error: str = Field(..., examples=["unauthorized"])
-    message: str = Field(..., examples=["Invalid or missing X-Api-Key header."])
+    error: str = Field(..., description="Machine-readable error code", examples=["unauthorized"])
+    message: str = Field(
+        ...,
+        description="Human-readable error description",
+        examples=["Invalid or missing X-Api-Key header."],
+    )
 
 
 class SentimentRequest(BaseModel):
