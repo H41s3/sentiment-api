@@ -50,10 +50,16 @@ class SentimentRequest(BaseModel):
 
 
 class SentimentResult(BaseModel):
-    label: Literal["POSITIVE", "NEGATIVE", "NEUTRAL"] = Field(..., examples=["POSITIVE"])
-    # score is the model's confidence, not a sentiment polarity score.
-    # A NEGATIVE result with score=0.99 means the model is 99% confident it's negative.
-    score: float = Field(..., ge=0.0, le=1.0, examples=[0.9998])
+    label: Literal["POSITIVE", "NEGATIVE", "NEUTRAL"] = Field(
+        ..., description="Predicted sentiment class", examples=["POSITIVE"]
+    )
+    score: float = Field(
+        ...,
+        ge=0.0,
+        le=1.0,
+        description="Model confidence in the predicted label (not a polarity score)",
+        examples=[0.9998],
+    )
 
 
 class SentimentResponse(BaseModel):
