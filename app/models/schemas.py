@@ -64,7 +64,9 @@ class SentimentResult(BaseModel):
 
 class SentimentResponse(BaseModel):
     text: str = Field(..., description="Original input text", examples=["I love this!"])
-    sentiment: SentimentResult
+    sentiment: SentimentResult = Field(
+        ..., description="Classification result with label and score"
+    )
     model: str = Field(
         ...,
         description="HuggingFace model used for classification",
