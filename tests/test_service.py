@@ -200,3 +200,14 @@ def test_warm_up_safe_before_load():
     assert service._pipeline is None
     service.warm_up()
     assert service._pipeline is None
+
+
+def test_total_inference_ms_starts_at_zero():
+    service = SentimentService(model_name="test-stub", max_length=512)
+    assert service._total_inference_ms == 0.0
+
+
+def test_total_inference_ms_grows_after_analyze():
+    service = _make_service()
+    service.analyze("great product")
+    assert service._total_inference_ms > 0.0
