@@ -4,6 +4,8 @@ from datetime import UTC, datetime
 from app.models.schemas import SentimentResult
 from app.utils.text import preprocess
 
+__all__ = ["SentimentService"]
+
 _POSITIVE_WORDS = {
     "love",
     "great",
