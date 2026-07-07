@@ -171,3 +171,15 @@ def test_openapi_model_info_inference_stats_have_descriptions():
     props = schema["components"]["schemas"]["ModelInfoResponse"]["properties"]
     for field in ("inference_count", "avg_inference_ms"):
         assert "description" in props[field], f"ModelInfoResponse.{field} missing description"
+
+
+def test_openapi_analyze_endpoint_tagged_as_sentiment():
+    schema = client.get("/openapi.json").json()
+    tags = schema["paths"]["/api/v1/analyze"]["post"]["tags"]
+    assert "sentiment" in tags
+
+
+def test_openapi_info_endpoint_tagged_as_meta():
+    schema = client.get("/openapi.json").json()
+    tags = schema["paths"]["/api/v1/info"]["get"]["tags"]
+    assert "meta" in tags
