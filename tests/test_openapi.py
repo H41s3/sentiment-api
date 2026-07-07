@@ -217,3 +217,9 @@ def test_openapi_sentiment_result_label_has_enum_values():
     label_prop = schema["components"]["schemas"]["SentimentResult"]["properties"]["label"]
     assert "enum" in label_prop
     assert set(label_prop["enum"]) == {"POSITIVE", "NEGATIVE", "NEUTRAL"}
+
+
+def test_openapi_batch_request_texts_has_min_items():
+    schema = client.get("/openapi.json").json()
+    texts_prop = schema["components"]["schemas"]["BatchSentimentRequest"]["properties"]["texts"]
+    assert texts_prop.get("minItems") == 1
