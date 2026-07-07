@@ -203,3 +203,10 @@ def test_openapi_sentiment_request_text_has_length_constraints():
     text_prop = schema["components"]["schemas"]["SentimentRequest"]["properties"]["text"]
     assert text_prop.get("minLength") == 1
     assert text_prop.get("maxLength") == 5000
+
+
+def test_openapi_sentiment_result_score_has_range_constraints():
+    schema = client.get("/openapi.json").json()
+    score_prop = schema["components"]["schemas"]["SentimentResult"]["properties"]["score"]
+    assert score_prop.get("minimum") == 0.0
+    assert score_prop.get("maximum") == 1.0
