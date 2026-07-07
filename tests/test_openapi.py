@@ -196,3 +196,10 @@ def test_openapi_sentiment_request_text_has_example():
     schema = client.get("/openapi.json").json()
     text_prop = schema["components"]["schemas"]["SentimentRequest"]["properties"]["text"]
     assert "examples" in text_prop
+
+
+def test_openapi_sentiment_request_text_has_length_constraints():
+    schema = client.get("/openapi.json").json()
+    text_prop = schema["components"]["schemas"]["SentimentRequest"]["properties"]["text"]
+    assert text_prop.get("minLength") == 1
+    assert text_prop.get("maxLength") == 5000
