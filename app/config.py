@@ -1,6 +1,8 @@
 from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+__all__ = ["Settings", "settings"]
+
 
 class Settings(BaseSettings):
     """Central configuration for the Sentiment API, driven entirely by environment variables.
