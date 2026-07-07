@@ -18,6 +18,8 @@ from app.middleware import LoggingMiddleware, SecurityHeadersMiddleware
 from app.routes import sentiment
 from app.services.sentiment_service import SentimentService
 
+__all__ = ["app"]
+
 _handler = logging.StreamHandler(sys.stdout)
 _handler.setFormatter(jsonlogger.JsonFormatter("%(asctime)s %(levelname)s %(name)s %(message)s"))
 logging.root.setLevel(settings.log_level.upper())
