@@ -210,3 +210,10 @@ def test_openapi_sentiment_result_score_has_range_constraints():
     score_prop = schema["components"]["schemas"]["SentimentResult"]["properties"]["score"]
     assert score_prop.get("minimum") == 0.0
     assert score_prop.get("maximum") == 1.0
+
+
+def test_openapi_sentiment_result_label_has_enum_values():
+    schema = client.get("/openapi.json").json()
+    label_prop = schema["components"]["schemas"]["SentimentResult"]["properties"]["label"]
+    assert "enum" in label_prop
+    assert set(label_prop["enum"]) == {"POSITIVE", "NEGATIVE", "NEUTRAL"}
