@@ -143,3 +143,10 @@ def test_openapi_info_endpoint_has_summary():
     get = schema["paths"]["/api/v1/info"]["get"]
     assert "summary" in get
     assert len(get["summary"]) > 0
+
+
+def test_openapi_sentiment_response_fields_have_descriptions():
+    schema = client.get("/openapi.json").json()
+    props = schema["components"]["schemas"]["SentimentResponse"]["properties"]
+    for field in ("text", "sentiment", "model", "processing_ms"):
+        assert "description" in props[field], f"SentimentResponse.{field} missing description"
