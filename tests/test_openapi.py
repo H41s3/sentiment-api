@@ -183,3 +183,10 @@ def test_openapi_info_endpoint_tagged_as_meta():
     schema = client.get("/openapi.json").json()
     tags = schema["paths"]["/api/v1/info"]["get"]["tags"]
     assert "meta" in tags
+
+
+def test_openapi_error_response_fields_have_examples():
+    schema = client.get("/openapi.json").json()
+    props = schema["components"]["schemas"]["ErrorResponse"]["properties"]
+    assert "examples" in props["error"], "ErrorResponse.error missing examples"
+    assert "examples" in props["message"], "ErrorResponse.message missing examples"
