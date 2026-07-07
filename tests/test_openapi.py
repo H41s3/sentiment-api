@@ -164,3 +164,10 @@ def test_openapi_batch_sentiment_item_fields_have_descriptions():
     props = schema["components"]["schemas"]["BatchSentimentItem"]["properties"]
     for field in ("text", "sentiment"):
         assert "description" in props[field], f"BatchSentimentItem.{field} missing description"
+
+
+def test_openapi_model_info_inference_stats_have_descriptions():
+    schema = client.get("/openapi.json").json()
+    props = schema["components"]["schemas"]["ModelInfoResponse"]["properties"]
+    for field in ("inference_count", "avg_inference_ms"):
+        assert "description" in props[field], f"ModelInfoResponse.{field} missing description"
