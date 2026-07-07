@@ -112,6 +112,18 @@ def test_openapi_sentiment_result_fields_have_descriptions():
     assert "description" in props["score"]
 
 
+def test_openapi_schema_contains_versioned_health_path():
+    schema = client.get("/openapi.json").json()
+    assert "/api/v1/health" in schema["paths"]
+
+
+def test_openapi_versioned_health_has_summary():
+    schema = client.get("/openapi.json").json()
+    get = schema["paths"]["/api/v1/health"]["get"]
+    assert "summary" in get
+    assert len(get["summary"]) > 0
+
+
 def test_openapi_analyze_endpoint_has_summary():
     schema = client.get("/openapi.json").json()
     post = schema["paths"]["/api/v1/analyze"]["post"]
