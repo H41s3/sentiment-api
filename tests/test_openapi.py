@@ -110,3 +110,24 @@ def test_openapi_sentiment_result_fields_have_descriptions():
     props = schema["components"]["schemas"]["SentimentResult"]["properties"]
     assert "description" in props["label"]
     assert "description" in props["score"]
+
+
+def test_openapi_analyze_endpoint_has_summary():
+    schema = client.get("/openapi.json").json()
+    post = schema["paths"]["/api/v1/analyze"]["post"]
+    assert "summary" in post
+    assert len(post["summary"]) > 0
+
+
+def test_openapi_batch_endpoint_has_summary():
+    schema = client.get("/openapi.json").json()
+    post = schema["paths"]["/api/v1/analyze/batch"]["post"]
+    assert "summary" in post
+    assert len(post["summary"]) > 0
+
+
+def test_openapi_info_endpoint_has_summary():
+    schema = client.get("/openapi.json").json()
+    get = schema["paths"]["/api/v1/info"]["get"]
+    assert "summary" in get
+    assert len(get["summary"]) > 0
