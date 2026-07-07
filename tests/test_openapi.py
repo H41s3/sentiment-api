@@ -190,3 +190,9 @@ def test_openapi_error_response_fields_have_examples():
     props = schema["components"]["schemas"]["ErrorResponse"]["properties"]
     assert "examples" in props["error"], "ErrorResponse.error missing examples"
     assert "examples" in props["message"], "ErrorResponse.message missing examples"
+
+
+def test_openapi_sentiment_request_text_has_example():
+    schema = client.get("/openapi.json").json()
+    text_prop = schema["components"]["schemas"]["SentimentRequest"]["properties"]["text"]
+    assert "examples" in text_prop
