@@ -20,6 +20,8 @@ from app.models.schemas import (
 )
 from app.services.sentiment_service import SentimentService
 
+__all__ = ["router"]
+
 # Reused across routes so the 401 shape is documented consistently in OpenAPI
 # without repeating the dict literal everywhere.
 _AUTH_RESPONSES = {401: {"model": ErrorResponse}}
