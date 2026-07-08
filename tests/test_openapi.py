@@ -250,3 +250,15 @@ def test_openapi_sentiment_result_fields_have_examples():
     props = schema["components"]["schemas"]["SentimentResult"]["properties"]
     for field in ("label", "score"):
         assert "examples" in props[field], f"SentimentResult.{field} missing examples"
+
+
+def test_openapi_sentiment_request_forbids_additional_properties():
+    schema = client.get("/openapi.json").json()
+    request_schema = schema["components"]["schemas"]["SentimentRequest"]
+    assert request_schema.get("additionalProperties") is False
+
+
+def test_openapi_batch_request_forbids_additional_properties():
+    schema = client.get("/openapi.json").json()
+    request_schema = schema["components"]["schemas"]["BatchSentimentRequest"]
+    assert request_schema.get("additionalProperties") is False
