@@ -104,3 +104,11 @@ def test_html_with_url_combined():
     result = preprocess("<a href='https://example.com'>Click here</a>")
     assert "href" not in result
     assert "Click here" in result
+
+
+def test_strips_delete_character():
+    assert preprocess("hello\x7fworld") == "helloworld"
+
+
+def test_strips_escape_character():
+    assert preprocess("hello\x1bworld") == "helloworld"
