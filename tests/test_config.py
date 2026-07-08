@@ -226,3 +226,13 @@ def test_cors_rejects_bare_domain():
 def test_cors_accepts_mixed_valid_origins():
     s = Settings(cors_origins=["https://a.com", "http://b.com", "*"])
     assert len(s.cors_origins) == 3
+
+
+def test_cors_rejects_ftp_protocol():
+    with pytest.raises(ValueError, match="CORS_ORIGINS"):
+        Settings(cors_origins=["ftp://example.com"])
+
+
+def test_cors_rejects_ws_protocol():
+    with pytest.raises(ValueError, match="CORS_ORIGINS"):
+        Settings(cors_origins=["ws://example.com"])
