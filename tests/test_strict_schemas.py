@@ -49,3 +49,8 @@ def test_analyze_rejects_non_string_text():
 def test_batch_rejects_empty_string_item():
     response = client.post("/api/v1/analyze/batch", json={"texts": ["hello", ""]})
     assert response.status_code == 422
+
+
+def test_batch_rejects_item_exceeding_max_length():
+    response = client.post("/api/v1/analyze/batch", json={"texts": ["ok", "a" * 5001]})
+    assert response.status_code == 422
