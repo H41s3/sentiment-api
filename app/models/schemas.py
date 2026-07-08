@@ -117,9 +117,7 @@ class ModelInfoResponse(BaseModel):
     max_length: int = Field(
         ..., description="Maximum token length accepted by the tokenizer", examples=[512]
     )
-    max_batch_size: int = Field(
-        ..., description="Maximum texts per batch request", examples=[32]
-    )
+    max_batch_size: int = Field(..., description="Maximum texts per batch request", examples=[32])
     version: str = Field(..., description="API package version", examples=["0.1.0"])
     inference_count: int = Field(
         ..., description="Total texts classified by this worker since startup", examples=[1024]

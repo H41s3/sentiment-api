@@ -228,7 +228,15 @@ def test_openapi_batch_request_texts_has_min_items():
 def test_openapi_model_info_fields_have_examples():
     schema = client.get("/openapi.json").json()
     props = schema["components"]["schemas"]["ModelInfoResponse"]["properties"]
-    for field in ("model", "max_length", "max_batch_size", "version", "inference_count", "avg_inference_ms"):
+    fields = (
+        "model",
+        "max_length",
+        "max_batch_size",
+        "version",
+        "inference_count",
+        "avg_inference_ms",
+    )
+    for field in fields:
         assert "examples" in props[field], f"ModelInfoResponse.{field} missing examples"
 
 
