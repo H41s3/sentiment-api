@@ -230,3 +230,9 @@ def test_openapi_model_info_fields_have_examples():
     props = schema["components"]["schemas"]["ModelInfoResponse"]["properties"]
     for field in ("model", "max_length", "max_batch_size", "version", "inference_count", "avg_inference_ms"):
         assert "examples" in props[field], f"ModelInfoResponse.{field} missing examples"
+
+
+def test_openapi_batch_sentiment_item_text_has_example():
+    schema = client.get("/openapi.json").json()
+    text_prop = schema["components"]["schemas"]["BatchSentimentItem"]["properties"]["text"]
+    assert "examples" in text_prop
