@@ -58,3 +58,14 @@ def test_500_content_type_is_json(monkeypatch):
         assert "application/json" in response.headers["content-type"]
     finally:
         app.dependency_overrides.clear()
+
+
+def test_500_does_not_include_file_paths(monkeypatch):
+    client = _crash_client(monkeypatch)
+    try:
+        response = client.post("/api/v1/analyze", json={"text": "hello"})
+        assert response.status_code == 500
+        assert "/app/" not in response.text
+        assert "sentiment_service.py" not in response.text
+    finally:
+        app.dependency_overrides.clear()
