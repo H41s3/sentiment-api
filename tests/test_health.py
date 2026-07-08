@@ -152,3 +152,17 @@ def test_top_level_health_model_matches_config():
 
     response = client.get("/health")
     assert response.json()["model"] == settings.model_name
+
+
+def test_readiness_includes_model_name_when_loaded(loaded_client):
+    from app.config import settings
+
+    response = loaded_client.get("/health/ready")
+    assert response.status_code == 200
+    assert response.json()["model"] == settings.model_name
+
+
+def test_liveness_response_has_status_key():
+    response = client.get("/health/live")
+    body = response.json()
+    assert body == {"status": "ok"}
