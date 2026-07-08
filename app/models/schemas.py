@@ -89,7 +89,7 @@ class BatchSentimentRequest(BaseModel):
 
 
 class BatchSentimentItem(BaseModel):
-    text: str = Field(..., description="Original input text")
+    text: str = Field(..., description="Original input text", examples=["I love this!"])
     sentiment: SentimentResult = Field(..., description="Classification result for this text")
 
 
