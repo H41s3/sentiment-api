@@ -211,3 +211,17 @@ def test_total_inference_ms_grows_after_analyze():
     service = _make_service()
     service.analyze("great product")
     assert service._total_inference_ms > 0.0
+
+
+def test_stub_positive_score_scales_with_word_count():
+    service = _make_service()
+    one_word = service.analyze("great")
+    two_words = service.analyze("great awesome")
+    assert two_words.score > one_word.score
+
+
+def test_stub_negative_score_scales_with_word_count():
+    service = _make_service()
+    one_word = service.analyze("terrible")
+    two_words = service.analyze("terrible awful")
+    assert two_words.score > one_word.score
