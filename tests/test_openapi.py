@@ -223,3 +223,10 @@ def test_openapi_batch_request_texts_has_min_items():
     schema = client.get("/openapi.json").json()
     texts_prop = schema["components"]["schemas"]["BatchSentimentRequest"]["properties"]["texts"]
     assert texts_prop.get("minItems") == 1
+
+
+def test_openapi_model_info_fields_have_examples():
+    schema = client.get("/openapi.json").json()
+    props = schema["components"]["schemas"]["ModelInfoResponse"]["properties"]
+    for field in ("model", "max_length", "max_batch_size", "version", "inference_count", "avg_inference_ms"):
+        assert "examples" in props[field], f"ModelInfoResponse.{field} missing examples"
