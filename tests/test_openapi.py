@@ -236,3 +236,17 @@ def test_openapi_batch_sentiment_item_text_has_example():
     schema = client.get("/openapi.json").json()
     text_prop = schema["components"]["schemas"]["BatchSentimentItem"]["properties"]["text"]
     assert "examples" in text_prop
+
+
+def test_openapi_sentiment_response_fields_have_examples():
+    schema = client.get("/openapi.json").json()
+    props = schema["components"]["schemas"]["SentimentResponse"]["properties"]
+    for field in ("text", "model", "processing_ms"):
+        assert "examples" in props[field], f"SentimentResponse.{field} missing examples"
+
+
+def test_openapi_sentiment_result_fields_have_examples():
+    schema = client.get("/openapi.json").json()
+    props = schema["components"]["schemas"]["SentimentResult"]["properties"]
+    for field in ("label", "score"):
+        assert "examples" in props[field], f"SentimentResult.{field} missing examples"
