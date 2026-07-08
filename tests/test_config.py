@@ -35,6 +35,11 @@ def test_rejects_zero_workers():
         Settings(web_concurrency=0)
 
 
+def test_rejects_negative_workers():
+    with pytest.raises(ValueError, match="WEB_CONCURRENCY"):
+        Settings(web_concurrency=-1)
+
+
 def test_rejects_batch_size_too_large():
     with pytest.raises(ValueError, match="MAX_BATCH_SIZE"):
         Settings(max_batch_size=200)
