@@ -109,13 +109,23 @@ class BatchSentimentResponse(BaseModel):
 
 
 class ModelInfoResponse(BaseModel):
-    model: str = Field(..., description="HuggingFace model identifier")
-    max_length: int = Field(..., description="Maximum token length accepted by the tokenizer")
-    max_batch_size: int = Field(..., description="Maximum texts per batch request")
-    version: str = Field(..., description="API package version")
+    model: str = Field(
+        ...,
+        description="HuggingFace model identifier",
+        examples=["distilbert-base-uncased-finetuned-sst-2-english"],
+    )
+    max_length: int = Field(
+        ..., description="Maximum token length accepted by the tokenizer", examples=[512]
+    )
+    max_batch_size: int = Field(
+        ..., description="Maximum texts per batch request", examples=[32]
+    )
+    version: str = Field(..., description="API package version", examples=["0.1.0"])
     inference_count: int = Field(
-        ..., description="Total texts classified by this worker since startup"
+        ..., description="Total texts classified by this worker since startup", examples=[1024]
     )
     avg_inference_ms: float = Field(
-        ..., description="Average inference time per text in milliseconds since startup"
+        ...,
+        description="Average inference time per text in milliseconds since startup",
+        examples=[8.75],
     )
