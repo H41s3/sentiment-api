@@ -69,3 +69,18 @@ def test_security_headers_present_on_metrics_endpoint():
     response = client.get("/metrics")
     assert response.headers["x-content-type-options"] == "nosniff"
     assert response.headers["cache-control"] == "no-store"
+
+
+def test_security_headers_present_on_404_responses():
+    response = client.get("/nonexistent/path")
+    assert response.status_code == 404
+    assert response.headers["x-content-type-options"] == "nosniff"
+    assert response.headers["x-frame-options"] == "DENY"
+    assert response.headers["strict-transport-security"] == "max-age=63072000; includeSubDomains"
+
+
+def test_security_headers_present_on_method_not_allowed():
+    response = client.delete("/health/live")
+    assert response.status_code == 405
+    assert response.headers["x-content-type-options"] == "nosniff"
+    assert response.headers["x-frame-options"] == "DENY"

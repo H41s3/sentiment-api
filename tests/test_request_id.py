@@ -41,3 +41,15 @@ def test_request_id_present_on_error_responses():
     response = client.post("/api/v1/analyze", json={"text": ""})
     assert response.status_code == 422
     assert "x-request-id" in response.headers
+
+
+def test_request_id_present_on_404_responses():
+    response = client.get("/nonexistent/path")
+    assert response.status_code == 404
+    assert "x-request-id" in response.headers
+
+
+def test_request_id_present_on_405_responses():
+    response = client.delete("/health/live")
+    assert response.status_code == 405
+    assert "x-request-id" in response.headers
