@@ -69,3 +69,26 @@ def test_500_does_not_include_file_paths(monkeypatch):
         assert "sentiment_service.py" not in response.text
     finally:
         app.dependency_overrides.clear()
+
+
+def test_500_does_not_leak_exception_class_name(monkeypatch):
+    client = _crash_client(monkeypatch)
+    try:
+        response = client.post("/api/v1/analyze", json={"text": "hello"})
+        assert response.status_code == 500
+        body = response.json()
+        assert "RuntimeError" not in body.get("message", "")
+        assert "unexpected crash" not in body.get("message", "")
+    finally:
+        app.dependency_overrides.clear()
+
+
+def test_500_does_not_leak_module_names(monkeypatch):
+    client = _crash_client(monkeypatch)
+    try:
+        response = client.post("/api/v1/analyze", json={"text": "hello"})
+        assert response.status_code == 500
+        assert "app.services" not in response.text
+        assert "app.routes" not in response.text
+    finally:
+        app.dependency_overrides.clear()

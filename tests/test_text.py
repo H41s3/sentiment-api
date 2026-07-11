@@ -112,3 +112,32 @@ def test_strips_delete_character():
 
 def test_strips_escape_character():
     assert preprocess("hello\x1bworld") == "helloworld"
+
+
+def test_only_control_chars_returns_empty():
+    assert preprocess("\x00\x01\x02\x03") == ""
+
+
+def test_url_only_input_returns_url_token():
+    assert preprocess("https://example.com") == "[URL]"
+
+
+def test_multiple_urls_no_surrounding_text():
+    assert preprocess("https://a.com https://b.com") == "[URL] [URL]"
+
+
+def test_html_attributes_stripped_completely():
+    result = preprocess('<div class="wrapper" id="main">content</div>')
+    assert "class" not in result
+    assert "wrapper" not in result
+    assert result == "content"
+
+
+def test_nested_html_with_whitespace():
+    result = preprocess("<div>  <p>  hello  </p>  </div>")
+    assert result == "hello"
+
+
+def test_url_with_query_params_replaced():
+    result = preprocess("go to https://example.com/path?q=test&lang=en now")
+    assert result == "go to [URL] now"
