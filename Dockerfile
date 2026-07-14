@@ -12,16 +12,16 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
 WORKDIR /app
 
-COPY pyproject.toml uv.lock ./
+RUN groupadd --system appuser && useradd --system --gid appuser appuser
+
+COPY --chown=appuser:appuser pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-install-project
 
-COPY . .
+COPY --chown=appuser:appuser . .
 
 # Pre-download model weights so first request isn't slow
 RUN uv run python -c "from transformers import pipeline; pipeline('sentiment-analysis', model='distilbert-base-uncased-finetuned-sst-2-english')" || true
 
-RUN groupadd --system appuser && useradd --system --gid appuser appuser \
-    && chown -R appuser:appuser /app
 USER appuser
 
 EXPOSE 8000
