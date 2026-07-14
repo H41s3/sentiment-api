@@ -36,6 +36,11 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
+addopts = "--strict-markers"
+filterwarnings = [
+    "ignore::PendingDeprecationWarning:starlette.formparsers",
+    "ignore::FutureWarning:huggingface_hub.file_download",
+]
 
 [tool.ruff]
 line-length = 100
