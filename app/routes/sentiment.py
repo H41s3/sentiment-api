@@ -9,7 +9,7 @@ from app.config import settings
 from app.dependencies import get_sentiment_service
 from app.limiter import limiter
 from app.metrics import BATCH_SIZE, INFERENCE_DURATION_SECONDS, INFERENCE_REQUESTS_TOTAL
-from app.models.schemas import (
+from app.models import (
     BatchSentimentItem,
     BatchSentimentRequest,
     BatchSentimentResponse,
