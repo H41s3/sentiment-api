@@ -69,7 +69,7 @@ def test_loglevel_reads_log_level_env(monkeypatch):
 
 def test_worker_tmp_dir_uses_tmpfs():
     mod = _load_config()
-    assert mod.worker_tmp_dir == "/dev/shm"
+    assert mod.worker_tmp_dir == "/dev/shm"  # noqa: S108
 
 
 def test_accesslog_writes_to_stdout():
