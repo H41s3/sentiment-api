@@ -225,3 +225,19 @@ def test_stub_negative_score_scales_with_word_count():
     one_word = service.analyze("terrible")
     two_words = service.analyze("terrible awful")
     assert two_words.score > one_word.score
+
+
+def test_warm_up_calls_pipeline_when_loaded():
+    service = SentimentService(model_name="test-stub", max_length=512)
+    calls = []
+    service._pipeline = lambda text: calls.append(text) or [{"label": "POSITIVE", "score": 0.9}]
+    service.warm_up()
+    assert len(calls) == 1
+    assert calls[0] == "warm up"
+
+
+def test_warm_up_noop_when_pipeline_is_none():
+    service = SentimentService(model_name="test-stub", max_length=512)
+    assert service._pipeline is None
+    service.warm_up()
+    assert service._pipeline is None
