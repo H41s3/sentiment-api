@@ -1,4 +1,4 @@
-.PHONY: help run dev test lint test-cov lint-fix format format-check ci clean docker-build docker-up observability
+.PHONY: help run dev test lint test-cov lint-fix format format-check ci clean docker-build docker-up observability check
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | \
@@ -43,3 +43,5 @@ observability: ## Start stack with Prometheus and Grafana
 
 dev: ## Start dev stack with hot reload
 	docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+check: lint format-check test-cov ## Run lint, format check, and tests with coverage
