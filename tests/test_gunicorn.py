@@ -65,3 +65,18 @@ def test_loglevel_reads_log_level_env(monkeypatch):
     monkeypatch.setenv("LOG_LEVEL", "DEBUG")
     mod = _load_config()
     assert mod.loglevel == "debug"
+
+
+def test_worker_tmp_dir_uses_tmpfs():
+    mod = _load_config()
+    assert mod.worker_tmp_dir == "/dev/shm"
+
+
+def test_accesslog_writes_to_stdout():
+    mod = _load_config()
+    assert mod.accesslog == "-"
+
+
+def test_errorlog_writes_to_stderr():
+    mod = _load_config()
+    assert mod.errorlog == "-"
