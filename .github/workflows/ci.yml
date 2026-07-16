@@ -21,8 +21,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: uvx ruff check app tests
-      - run: uvx ruff format --check app tests
+      - run: uv sync --group dev --frozen
+      - run: uv run ruff check app tests
+      - run: uv run ruff format --check app tests
 
   test:
     runs-on: ubuntu-latest
