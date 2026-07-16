@@ -270,3 +270,20 @@ def test_openapi_batch_request_forbids_additional_properties():
     schema = client.get("/openapi.json").json()
     request_schema = schema["components"]["schemas"]["BatchSentimentRequest"]
     assert request_schema.get("additionalProperties") is False
+
+
+def test_openapi_versioned_health_response_has_typed_schema():
+    schema = client.get("/openapi.json").json()
+    schemas = schema["components"]["schemas"]
+    assert "VersionedHealthResponse" in schemas
+    props = schemas["VersionedHealthResponse"]["properties"]
+    assert "status" in props
+    assert "model" in props
+    assert "pipeline_loaded" in props
+
+
+def test_openapi_versioned_health_fields_have_descriptions():
+    schema = client.get("/openapi.json").json()
+    props = schema["components"]["schemas"]["VersionedHealthResponse"]["properties"]
+    for field in ("status", "model", "pipeline_loaded"):
+        assert "description" in props[field], f"VersionedHealthResponse.{field} missing description"
