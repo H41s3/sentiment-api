@@ -8,6 +8,7 @@ from app.models.schemas import (
     SentimentRequest,
     SentimentResponse,
     SentimentResult,
+    VersionedHealthResponse,
 )
 
 __all__ = [
@@ -20,4 +21,5 @@ __all__ = [
     "SentimentRequest",
     "SentimentResponse",
     "SentimentResult",
+    "VersionedHealthResponse",
 ]

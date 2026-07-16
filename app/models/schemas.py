@@ -12,6 +12,7 @@ __all__ = [
     "SentimentRequest",
     "SentimentResponse",
     "SentimentResult",
+    "VersionedHealthResponse",
 ]
 
 # Shared type alias applied to every user-supplied text field.
@@ -105,6 +106,18 @@ class BatchSentimentResponse(BaseModel):
     count: int = Field(..., description="Number of texts in the batch", examples=[3])
     processing_ms: float = Field(
         ..., description="Time spent on batch inference in milliseconds", examples=[45.67]
+    )
+
+
+class VersionedHealthResponse(BaseModel):
+    status: Literal["ok"] = Field(..., description="Always 'ok'", examples=["ok"])
+    model: str = Field(
+        ...,
+        description="Model identifier loaded by this worker",
+        examples=["distilbert-base-uncased-finetuned-sst-2-english"],
+    )
+    pipeline_loaded: bool = Field(
+        ..., description="Whether the inference pipeline is initialized", examples=[True]
     )
 
 

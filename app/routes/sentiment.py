@@ -17,6 +17,7 @@ from app.models import (
     ModelInfoResponse,
     SentimentRequest,
     SentimentResponse,
+    VersionedHealthResponse,
 )
 from app.services.sentiment_service import SentimentService
 
@@ -29,18 +30,23 @@ _AUTH_RESPONSES = {401: {"model": ErrorResponse}}
 router = APIRouter(tags=["sentiment"])
 
 
-@router.get("/health", tags=["meta"], summary="Versioned health check")
+@router.get(
+    "/health",
+    response_model=VersionedHealthResponse,
+    tags=["meta"],
+    summary="Versioned health check",
+)
 def versioned_health(service: SentimentService = Depends(get_sentiment_service)):
     """Versioned health check that also reports pipeline load status.
 
     Prefer /health/ready for orchestration probes. This endpoint is useful
     for human operators who want to confirm which model is loaded at a glance.
     """
-    return {
-        "status": "ok",
-        "model": service.model_name,
-        "pipeline_loaded": service.is_loaded,
-    }
+    return VersionedHealthResponse(
+        status="ok",
+        model=service.model_name,
+        pipeline_loaded=service.is_loaded,
+    )
 
 
 @router.get(
