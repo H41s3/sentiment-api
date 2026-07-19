@@ -38,7 +38,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - run: uv sync --group dev
+      - run: uv sync --group dev --frozen
       - run: uv run pytest tests/ --cov=app --cov-fail-under=80 --cov-report=term-missing --cov-report=html:htmlcov
       - uses: actions/upload-artifact@v4
         if: always()
