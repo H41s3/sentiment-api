@@ -14,7 +14,7 @@ lint: ## Check code style with ruff
 	uv run ruff check app/ tests/
 
 test-cov: ## Run tests with coverage report
-	uv run pytest tests/ -v --cov=app --cov-report=term-missing
+	uv run pytest tests/ -v --cov=app --cov-fail-under=80 --cov-report=term-missing
 
 lint-fix: ## Auto-fix lint violations
 	uv run ruff check app/ tests/ --fix
