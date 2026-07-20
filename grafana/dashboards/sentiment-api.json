@@ -89,6 +89,31 @@
       "targets": [{ "expr": "sentiment_model_loaded", "refId": "A" }]
     },
     {
+      "id": 8,
+      "title": "Total Inferences",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 16 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "blue", "value": null },
+              { "color": "green", "value": 1000 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "expr": "sum(sentiment_inference_requests_total)",
+          "refId": "A"
+        }
+      ]
+    },
+    {
       "id": 6,
       "title": "Input Text Length (p50 / p95)",
       "type": "timeseries",
