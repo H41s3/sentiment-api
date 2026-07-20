@@ -10,6 +10,9 @@ run: ## Start dev server with hot reload
 test: ## Run test suite
 	uv run pytest tests/ -v
 
+test-one: ## Run a single test file: make test-one F=test_metrics
+	uv run pytest tests/$(F).py -v
+
 lint: ## Check code style with ruff
 	uv run ruff check app/ tests/
 
