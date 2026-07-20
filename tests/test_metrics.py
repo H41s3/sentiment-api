@@ -48,3 +48,15 @@ def test_batch_size_histogram_count_increments_per_request():
     client.post("/api/v1/analyze/batch", json={"texts": ["one", "two", "three", "four", "five"]})
     response = client.get("/metrics")
     assert "sentiment_batch_size_count" in response.text
+
+
+def test_input_text_length_histogram_present_after_analyze():
+    client.post("/api/v1/analyze", json={"text": "great product"})
+    response = client.get("/metrics")
+    assert "sentiment_input_text_length_chars" in response.text
+
+
+def test_input_text_length_tracked_for_batch_requests():
+    client.post("/api/v1/analyze/batch", json={"texts": ["short", "a slightly longer sentence"]})
+    response = client.get("/metrics")
+    assert "sentiment_input_text_length_chars_count" in response.text
