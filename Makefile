@@ -1,4 +1,5 @@
-.PHONY: help run dev test lint test-cov lint-fix format format-check ci clean docker-build docker-up observability check
+.DEFAULT_GOAL := help
+.PHONY: help run dev test test-one lint test-cov lint-fix format format-check ci clean docker-build docker-up observability check
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | \
