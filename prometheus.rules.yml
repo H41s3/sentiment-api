@@ -1,0 +1,15 @@
+groups:
+  - name: sentiment-api
+    interval: 15s
+    rules:
+      - record: sentiment:inference_rate:5m
+        expr: sum(rate(sentiment_inference_requests_total[5m])) by (endpoint)
+
+      - record: sentiment:inference_duration_p95:5m
+        expr: histogram_quantile(0.95, sum(rate(sentiment_inference_duration_seconds_bucket[5m])) by (le, endpoint))
+
+      - record: sentiment:error_rate:5m
+        expr: sum(rate(http_requests_total{status=~"5.."}[5m]))
+
+      - record: sentiment:input_text_length_p95:5m
+        expr: histogram_quantile(0.95, sum(rate(sentiment_input_text_length_chars_bucket[5m])) by (le))
