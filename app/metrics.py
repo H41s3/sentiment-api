@@ -4,6 +4,7 @@ __all__ = [
     "BATCH_SIZE",
     "INFERENCE_DURATION_SECONDS",
     "INFERENCE_REQUESTS_TOTAL",
+    "INPUT_TEXT_LENGTH",
     "MODEL_LOADED",
 ]
 
@@ -28,4 +29,10 @@ BATCH_SIZE = Histogram(
     "sentiment_batch_size",
     "Number of texts submitted per batch request",
     buckets=[1, 2, 5, 10, 25, 50, 100],
+)
+
+INPUT_TEXT_LENGTH = Histogram(
+    "sentiment_input_text_length_chars",
+    "Character count of each input text after preprocessing",
+    buckets=[10, 50, 100, 250, 500, 1000, 2500, 5000],
 )

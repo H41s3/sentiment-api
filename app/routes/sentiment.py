@@ -8,7 +8,12 @@ from app.auth import verify_api_key
 from app.config import settings
 from app.dependencies import get_sentiment_service
 from app.limiter import limiter
-from app.metrics import BATCH_SIZE, INFERENCE_DURATION_SECONDS, INFERENCE_REQUESTS_TOTAL
+from app.metrics import (
+    BATCH_SIZE,
+    INFERENCE_DURATION_SECONDS,
+    INFERENCE_REQUESTS_TOTAL,
+    INPUT_TEXT_LENGTH,
+)
 from app.models import (
     BatchSentimentItem,
     BatchSentimentRequest,
@@ -97,6 +102,7 @@ async def analyze_sentiment(
     t0 = time.perf_counter()
     result = await loop.run_in_executor(None, service.analyze, body.text)
     processing_ms = round((time.perf_counter() - t0) * 1000, 2)
+    INPUT_TEXT_LENGTH.observe(len(body.text))
     INFERENCE_REQUESTS_TOTAL.labels(endpoint="single", label=result.label).inc()
     INFERENCE_DURATION_SECONDS.labels(endpoint="single").observe(processing_ms / 1000)
     return SentimentResponse(
@@ -143,6 +149,8 @@ async def analyze_batch(
     loop = asyncio.get_running_loop()
     t0 = time.perf_counter()
     sentiments = await loop.run_in_executor(None, service.analyze_batch, body.texts)
+    for t in body.texts:
+        INPUT_TEXT_LENGTH.observe(len(t))
     BATCH_SIZE.observe(len(body.texts))
     processing_ms = round((time.perf_counter() - t0) * 1000, 2)
     for _r in sentiments:
