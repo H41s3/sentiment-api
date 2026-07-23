@@ -22,15 +22,25 @@
     },
     {
       "id": 2,
-      "title": "Inference Duration p95 (seconds)",
+      "title": "Inference Duration (seconds)",
       "type": "timeseries",
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
       "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] },
       "targets": [
         {
-          "expr": "histogram_quantile(0.95, sum(rate(sentiment_inference_duration_seconds_bucket[5m])) by (le, endpoint))",
-          "legendFormat": "{{endpoint}}",
+          "expr": "histogram_quantile(0.50, sum(rate(sentiment_inference_duration_seconds_bucket[5m])) by (le, endpoint))",
+          "legendFormat": "p50 {{endpoint}}",
           "refId": "A"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(sentiment_inference_duration_seconds_bucket[5m])) by (le, endpoint))",
+          "legendFormat": "p95 {{endpoint}}",
+          "refId": "B"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(sentiment_inference_duration_seconds_bucket[5m])) by (le, endpoint))",
+          "legendFormat": "p99 {{endpoint}}",
+          "refId": "C"
         }
       ]
     },
