@@ -19,3 +19,6 @@ groups:
 
       - record: sentiment:input_text_length_p95:5m
         expr: histogram_quantile(0.95, sum(rate(sentiment_input_text_length_chars_bucket[5m])) by (le))
+
+      - record: sentiment:success_rate:5m
+        expr: 1 - (sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m])))
