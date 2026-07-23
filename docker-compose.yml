@@ -18,7 +18,7 @@ services:
   # Shared rate-limit storage — all API workers and replicas write to this
   # single Redis instance, fixing the per-worker counter drift bug.
   redis:
-    image: redis:7-alpine
+    image: redis:7.4-alpine
     restart: unless-stopped
     deploy:
       resources:
