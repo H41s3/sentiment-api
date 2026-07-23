@@ -25,6 +25,13 @@ graph LR
 
     HF[["HuggingFace Hub"]]
 
+    subgraph Observability["Observability Stack"]
+        Prom["Prometheus"]
+        Graf["Grafana"]
+    end
+
+    Redis[("Redis")]
+
     Client --> Log --> CORS
     CORS --> Live & Ready
     CORS --> Auth
@@ -33,6 +40,9 @@ graph LR
     Ready -->|"is model loaded?"| Service
     Analyze & Batch --> Preprocess --> Service --> Model
     HF -.->|"downloaded at docker build"| Model
+    Prom -->|"scrape /metrics"| Log
+    Graf -->|"query"| Prom
+    Redis -.->|"shared rate-limit counters"| Log
 ```
 
 ---
