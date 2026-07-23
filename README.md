@@ -137,8 +137,11 @@ sentiment-api/
 ├── app/
 │   ├── main.py                   # FastAPI app, lifespan, middleware registration
 │   ├── config.py                 # Settings (env-driven via pydantic-settings)
+│   ├── auth.py                   # Optional API key authentication
 │   ├── dependencies.py           # Singleton SentimentService factory
-│   ├── middleware.py             # Request logging middleware
+│   ├── limiter.py                # Per-key rate limiting with Redis backend
+│   ├── metrics.py                # Custom Prometheus counters and histograms
+│   ├── middleware.py             # Request logging + security headers
 │   ├── models/
 │   │   └── schemas.py            # Pydantic request/response models
 │   ├── routes/
@@ -146,8 +149,8 @@ sentiment-api/
 │   ├── services/
 │   │   └── sentiment_service.py  # Model loading and inference
 │   └── utils/
-│       └── text.py               # Text preprocessing
-├── tests/
+│       └── text.py               # Text preprocessing (HTML, URLs, whitespace)
+├── tests/                        # 327 tests, 100% coverage
 │   ├── conftest.py               # Fixtures (client, stub_client)
 │   ├── test_sentiment.py         # Endpoint and auth tests
 │   ├── test_health.py            # Liveness and readiness probes
@@ -157,10 +160,14 @@ sentiment-api/
 │   ├── test_text.py              # Text preprocessing
 │   ├── test_security_headers.py  # Security header middleware
 │   └── test_strict_schemas.py    # Extra field rejection
+├── grafana/                      # Pre-provisioned dashboards and datasources
+├── prometheus.yml                # Scrape config for the API
+├── prometheus.rules.yml          # Pre-computed recording rules
 ├── Dockerfile
 ├── docker-compose.yml
 ├── docker-compose.dev.yml
 ├── docker-compose.observability.yml
+├── gunicorn.conf.py
 ├── Makefile
 └── pyproject.toml
 ```
