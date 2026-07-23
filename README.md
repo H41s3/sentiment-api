@@ -28,7 +28,7 @@ A REST API for real-time text sentiment analysis built with FastAPI and HuggingF
 | Rate Limiting | SlowAPI (per-key buckets, optional Redis backend) |
 | Metrics | Prometheus + Grafana |
 | Linting | Ruff (check + format) |
-| Testing | Pytest + pytest-cov (80% gate) |
+| Testing | Pytest + pytest-cov (95% gate) |
 | CI | GitHub Actions (lint, test, Docker build) |
 | Container | Docker / Docker Compose |
 
