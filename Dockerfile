@@ -25,6 +25,8 @@ RUN uv run python -c "from transformers import pipeline; pipeline('sentiment-ana
 
 USER appuser
 
+STOPSIGNAL SIGTERM
+
 EXPOSE 8000
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
