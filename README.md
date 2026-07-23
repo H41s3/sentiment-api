@@ -6,9 +6,11 @@ A REST API for real-time text sentiment analysis built with FastAPI and HuggingF
 
 - **POST /api/v1/analyze** — classify a single text as POSITIVE / NEGATIVE with a confidence score
 - **POST /api/v1/analyze/batch** — classify up to 32 texts in one request
-- **GET /api/v1/health** — versioned liveness probe with model status
-- **GET /health** — root liveness probe for container orchestration
+- **GET /api/v1/health** — versioned health check with model status
 - **GET /api/v1/info** — model configuration and live inference stats
+- **GET /health** — legacy health check for backwards compatibility
+- **GET /health/live** — liveness probe (always 200, never gates on model)
+- **GET /health/ready** — readiness probe (503 until model is loaded)
 - Pydantic v2 request/response validation with strict schemas
 - Optional API key authentication (set `API_KEY` env var to enable)
 - Per-key rate limiting (60/min single, 20/min batch)
