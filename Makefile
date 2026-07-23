@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help run dev test test-one lint test-cov lint-fix format format-check ci clean docker-build docker-up observability check
+.PHONY: help run dev test test-one lint test-cov lint-fix format format-check ci clean docker-build docker-up docker-down observability check
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | \
@@ -41,6 +41,9 @@ docker-build: ## Build Docker image
 
 docker-up: ## Start production stack
 	docker compose up
+
+docker-down: ## Stop and remove all containers, networks, and volumes
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.observability.yml down -v
 
 observability: ## Start stack with Prometheus and Grafana
 	docker compose -f docker-compose.yml -f docker-compose.observability.yml up
